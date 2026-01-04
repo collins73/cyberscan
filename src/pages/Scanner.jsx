@@ -4,6 +4,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { motion } from 'framer-motion';
 import { Shield, Loader2, ArrowLeft, BarChart3 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
 import { useNavigate } from 'react-router-dom';
 import CodeInput from '../components/scanner/CodeInput';
 import ScanResults from '../components/scanner/ScanResults';
@@ -191,9 +192,14 @@ Also provide an overall security score from 0-100 (100 being most secure).`,
                   <Shield className="w-8 h-8 text-black" />
                 </div>
                 <div>
-                  <h1 className="text-3xl font-bold text-white tracking-tight">
-                    CyberScan
-                  </h1>
+                  <div className="flex items-center gap-3">
+                    <h1 className="text-3xl font-bold text-white tracking-tight">
+                      CyberScan
+                    </h1>
+                    <Badge className="bg-cyan-500/20 text-cyan-400 border-cyan-500/30 text-xs">
+                      v2.0
+                    </Badge>
+                  </div>
                   <p className="text-cyan-400 text-sm font-medium">
                     AI-Powered Security Analysis
                   </p>
