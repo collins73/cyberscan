@@ -2,8 +2,10 @@ import React, { useState } from 'react';
 import { base44 } from '@/api/base44Client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { motion } from 'framer-motion';
-import { Shield, Loader2, ArrowLeft } from 'lucide-react';
+import { Shield, Loader2, ArrowLeft, BarChart3 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Link } from 'react-router-dom';
+import { createPageUrl } from './utils';
 import CodeInput from '../components/scanner/CodeInput';
 import ScanResults from '../components/scanner/ScanResults';
 import ScanHistory from '../components/scanner/ScanHistory';
@@ -23,6 +25,13 @@ export default function Scanner() {
     mutationFn: (scanData) => base44.entities.CodeScan.create(scanData),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['codeScans'] });
+    }
+  });
+
+  const createMetricMutation = useMutation({
+    mutationFn: (metricData) => base44.entities.VulnerabilityMetric.create(metricData),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['vulnerabilityMetrics'] });
     }
   });
 
@@ -107,7 +116,21 @@ Also provide an overall security score from 0-100 (100 being most secure).`,
       };
 
       // Save scan to database
-      await createScanMutation.mutateAsync(scanData);
+      const savedScan = await createScanMutation.mutateAsync(scanData);
+
+      // Track metrics for each vulnerability
+      if (response.vulnerabilities && response.vulnerabilities.length > 0) {
+        for (const vuln of response.vulnerabilities) {
+          await createMetricMutation.mutateAsync({
+            vulnerability_type: vuln.title,
+            severity: vuln.severity,
+            language: language || 'Unknown',
+            scan_id: savedScan.id,
+            count: 1,
+            security_score: response.overall_score || 0
+          });
+        }
+      }
 
       setCurrentScan(scanData);
       setView('results');
@@ -177,16 +200,27 @@ Also provide an overall security score from 0-100 (100 being most secure).`,
                 </div>
               </div>
               
-              {view === 'results' && (
-                <Button
-                  onClick={handleBackToInput}
-                  variant="outline"
-                  className="border-cyan-500/30 text-cyan-400 hover:bg-cyan-500/10"
-                >
-                  <ArrowLeft className="w-4 h-4 mr-2" />
-                  New Scan
-                </Button>
-              )}
+              <div className="flex gap-3">
+                <Link to={createPageUrl('Analytics')}>
+                  <Button
+                    variant="outline"
+                    className="border-cyan-500/30 text-cyan-400 hover:bg-cyan-500/10"
+                  >
+                    <BarChart3 className="w-4 h-4 mr-2" />
+                    Analytics
+                  </Button>
+                </Link>
+                {view === 'results' && (
+                  <Button
+                    onClick={handleBackToInput}
+                    variant="outline"
+                    className="border-cyan-500/30 text-cyan-400 hover:bg-cyan-500/10"
+                  >
+                    <ArrowLeft className="w-4 h-4 mr-2" />
+                    New Scan
+                  </Button>
+                )}
+              </div>
             </div>
           </div>
         </motion.div>
