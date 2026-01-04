@@ -3,8 +3,7 @@ import { base44 } from '@/api/base44Client';
 import { useQuery } from '@tanstack/react-query';
 import { motion } from 'framer-motion';
 import { BarChart3, Shield, Loader2 } from 'lucide-react';
-import { Link } from 'react-router-dom';
-import { createPageUrl } from './utils';
+import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import MetricsOverview from '../components/analytics/MetricsOverview';
 import VulnerabilityTrends from '../components/analytics/VulnerabilityTrends';
@@ -14,6 +13,8 @@ import LanguageBreakdown from '../components/analytics/LanguageBreakdown';
 import SecurityScoreTrend from '../components/analytics/SecurityScoreTrend';
 
 export default function Analytics() {
+  const navigate = useNavigate();
+
   const { data: scans = [], isLoading: scansLoading } = useQuery({
     queryKey: ['codeScans'],
     queryFn: () => base44.entities.CodeScan.list('-created_date', 100)
@@ -65,15 +66,14 @@ export default function Analytics() {
                 </div>
               </div>
               
-              <Link to={createPageUrl('Scanner')}>
-                <Button
-                  variant="outline"
-                  className="border-cyan-500/30 text-cyan-400 hover:bg-cyan-500/10"
-                >
-                  <Shield className="w-4 h-4 mr-2" />
-                  Back to Scanner
-                </Button>
-              </Link>
+              <Button
+                variant="outline"
+                onClick={() => navigate('/Scanner')}
+                className="border-cyan-500/30 text-cyan-400 hover:bg-cyan-500/10"
+              >
+                <Shield className="w-4 h-4 mr-2" />
+                Back to Scanner
+              </Button>
             </div>
           </div>
         </motion.div>
@@ -91,12 +91,13 @@ export default function Analytics() {
               <p className="text-slate-400 mb-6">
                 Run some code scans to see analytics and metrics
               </p>
-              <Link to={createPageUrl('Scanner')}>
-                <Button className="bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600 text-black font-bold">
-                  <Shield className="w-5 h-5 mr-2" />
-                  Start Scanning
-                </Button>
-              </Link>
+              <Button 
+                onClick={() => navigate('/Scanner')}
+                className="bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600 text-black font-bold"
+              >
+                <Shield className="w-5 h-5 mr-2" />
+                Start Scanning
+              </Button>
             </motion.div>
           ) : (
             <div className="space-y-8">

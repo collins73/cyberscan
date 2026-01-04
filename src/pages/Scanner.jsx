@@ -4,13 +4,13 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { motion } from 'framer-motion';
 import { Shield, Loader2, ArrowLeft, BarChart3 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Link } from 'react-router-dom';
-import { createPageUrl } from './utils';
+import { useNavigate } from 'react-router-dom';
 import CodeInput from '../components/scanner/CodeInput';
 import ScanResults from '../components/scanner/ScanResults';
 import ScanHistory from '../components/scanner/ScanHistory';
 
 export default function Scanner() {
+  const navigate = useNavigate();
   const [isScanning, setIsScanning] = useState(false);
   const [currentScan, setCurrentScan] = useState(null);
   const [view, setView] = useState('input'); // 'input' or 'results'
@@ -201,15 +201,14 @@ Also provide an overall security score from 0-100 (100 being most secure).`,
               </div>
               
               <div className="flex gap-3">
-                <Link to={createPageUrl('Analytics')}>
-                  <Button
-                    variant="outline"
-                    className="border-cyan-500/30 text-cyan-400 hover:bg-cyan-500/10"
-                  >
-                    <BarChart3 className="w-4 h-4 mr-2" />
-                    Analytics
-                  </Button>
-                </Link>
+                <Button
+                  variant="outline"
+                  onClick={() => navigate('/Analytics')}
+                  className="border-cyan-500/30 text-cyan-400 hover:bg-cyan-500/10"
+                >
+                  <BarChart3 className="w-4 h-4 mr-2" />
+                  Analytics
+                </Button>
                 {view === 'results' && (
                   <Button
                     onClick={handleBackToInput}
