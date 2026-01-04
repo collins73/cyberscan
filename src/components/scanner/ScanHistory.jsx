@@ -1,12 +1,13 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { format } from "date-fns";
-import { FileCode, Eye, Shield } from "lucide-react";
-import { motion } from "framer-motion";
+import { FileCode, Eye, Shield, ChevronDown, ChevronUp } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 
 export default function ScanHistory({ scans, onViewScan }) {
+  const [isCollapsed, setIsCollapsed] = useState(false);
   if (!scans || scans.length === 0) {
     return (
       <Card className="bg-slate-900/50 border-slate-800">
@@ -28,14 +29,36 @@ export default function ScanHistory({ scans, onViewScan }) {
   return (
     <Card className="bg-slate-900/50 border-slate-800">
       <CardHeader className="border-b border-slate-800">
-        <CardTitle className="flex items-center gap-2 text-white">
-          <Shield className="w-5 h-5 text-cyan-400" />
-          Recent Scans
-        </CardTitle>
+        <div className="flex items-center justify-between">
+          <CardTitle className="flex items-center gap-2 text-white">
+            <Shield className="w-5 h-5 text-cyan-400" />
+            Recent Scans
+          </CardTitle>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => setIsCollapsed(!isCollapsed)}
+            className="text-slate-400 hover:text-white"
+          >
+            {isCollapsed ? (
+              <ChevronDown className="w-5 h-5" />
+            ) : (
+              <ChevronUp className="w-5 h-5" />
+            )}
+          </Button>
+        </div>
       </CardHeader>
-      <CardContent className="p-0">
-        <div className="divide-y divide-slate-800">
-          {scans.map((scan, index) => (
+      <AnimatePresence>
+        {!isCollapsed && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: "auto", opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.3 }}
+          >
+            <CardContent className="p-0">
+              <div className="divide-y divide-slate-800">
+                {scans.map((scan, index) => (
             <motion.div
               key={scan.id}
               initial={{ opacity: 0, x: -20 }}
@@ -76,10 +99,13 @@ export default function ScanHistory({ scans, onViewScan }) {
                   View
                 </Button>
               </div>
-            </motion.div>
-          ))}
-        </div>
-      </CardContent>
+                </motion.div>
+              ))}
+            </div>
+          </CardContent>
+        </motion.div>
+      )}
+      </AnimatePresence>
     </Card>
   );
 }
