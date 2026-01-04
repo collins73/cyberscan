@@ -2,7 +2,7 @@ import React from 'react';
 import { base44 } from '@/api/base44Client';
 import { useQuery } from '@tanstack/react-query';
 import { motion } from 'framer-motion';
-import { BarChart3, Shield, Loader2 } from 'lucide-react';
+import { BarChart3, Shield, Loader2, Download } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import MetricsOverview from '../components/analytics/MetricsOverview';
@@ -11,6 +11,7 @@ import SeverityDistribution from '../components/analytics/SeverityDistribution';
 import TopVulnerabilities from '../components/analytics/TopVulnerabilities';
 import LanguageBreakdown from '../components/analytics/LanguageBreakdown';
 import SecurityScoreTrend from '../components/analytics/SecurityScoreTrend';
+import AnalyticsReport from '../components/analytics/AnalyticsReport';
 
 export default function Analytics() {
   const navigate = useNavigate();
@@ -66,14 +67,19 @@ export default function Analytics() {
                 </div>
               </div>
               
-              <Button
-                variant="outline"
-                onClick={() => navigate('/Scanner')}
-                className="border-cyan-500/30 text-cyan-400 hover:bg-cyan-500/10"
-              >
-                <Shield className="w-4 h-4 mr-2" />
-                Back to Scanner
-              </Button>
+              <div className="flex gap-3">
+                {scans.length > 0 && (
+                  <AnalyticsReport scans={scans} metrics={metrics} />
+                )}
+                <Button
+                  variant="outline"
+                  onClick={() => navigate('/Scanner')}
+                  className="border-cyan-500/30 text-cyan-400 hover:bg-cyan-500/10"
+                >
+                  <Shield className="w-4 h-4 mr-2" />
+                  Back to Scanner
+                </Button>
+              </div>
             </div>
           </div>
         </motion.div>

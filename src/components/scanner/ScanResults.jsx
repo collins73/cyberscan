@@ -2,8 +2,9 @@ import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { motion } from "framer-motion";
-import { Shield, AlertTriangle, CheckCircle, Clock } from "lucide-react";
+import { Shield, AlertTriangle, CheckCircle, Clock, Download } from "lucide-react";
 import VulnerabilityCard from './VulnerabilityCard';
+import ReportGenerator from '../reports/ReportGenerator';
 
 export default function ScanResults({ scanData }) {
   const { vulnerabilities, overall_score, file_name, scan_duration } = scanData;
@@ -99,6 +100,22 @@ export default function ScanResults({ scanData }) {
           </div>
           <div className="text-slate-400 text-sm">
             {vulnerabilities?.length || 0} issues found
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Export Reports Section */}
+      <Card className="bg-slate-900/50 border-slate-800">
+        <CardContent className="p-6">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <Download className="w-5 h-5 text-cyan-400" />
+              <div>
+                <h3 className="text-white font-semibold">Export Report</h3>
+                <p className="text-slate-400 text-sm">Download detailed security analysis</p>
+              </div>
+            </div>
+            <ReportGenerator scanData={scanData} />
           </div>
         </CardContent>
       </Card>
