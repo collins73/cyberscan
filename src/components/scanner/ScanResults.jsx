@@ -132,6 +132,7 @@ export default function ScanResults({ scanData }) {
               key={index}
               vulnerability={vulnerability}
               index={index}
+              codeSnippet={code_snippet}
             />
           ))}
         </div>
