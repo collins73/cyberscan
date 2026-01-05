@@ -6,6 +6,7 @@ import { Shield, Loader2, ArrowLeft, BarChart3 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useNavigate } from 'react-router-dom';
+import { APP_VERSION } from '../config/version';
 import CodeInput from '../components/scanner/CodeInput';
 import ScanResults from '../components/scanner/ScanResults';
 import ScanHistory from '../components/scanner/ScanHistory';
@@ -197,7 +198,7 @@ Also provide an overall security score from 0-100 (100 being most secure).`,
                       CyberScan
                     </h1>
                     <Badge className="bg-cyan-500/20 text-cyan-400 border-cyan-500/30 text-xs">
-                      v2.0
+                      v{APP_VERSION}
                     </Badge>
                   </div>
                   <p className="text-cyan-400 text-sm font-medium">
