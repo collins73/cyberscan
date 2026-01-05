@@ -1,8 +1,8 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { base44 } from '@/api/base44Client';
 import { useQuery } from '@tanstack/react-query';
-import { motion } from 'framer-motion';
-import { BarChart3, Shield, Loader2, Download } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { BarChart3, Shield, Loader2, Settings, Layout as LayoutIcon } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import MetricsOverview from '../components/analytics/MetricsOverview';
@@ -11,22 +11,51 @@ import SeverityDistribution from '../components/analytics/SeverityDistribution';
 import TopVulnerabilities from '../components/analytics/TopVulnerabilities';
 import LanguageBreakdown from '../components/analytics/LanguageBreakdown';
 import SecurityScoreTrend from '../components/analytics/SecurityScoreTrend';
-import AnalyticsReport from '../components/analytics/AnalyticsReport';
+import DashboardWidget from '../components/dashboard/DashboardWidget';
+import FileComparisonWidget from '../components/dashboard/FileComparisonWidget';
+import ThreatIntelWidget from '../components/dashboard/ThreatIntelWidget';
+import TimeRangeFilter from '../components/dashboard/TimeRangeFilter';
+import WidgetSelector from '../components/dashboard/WidgetSelector';
+import ComprehensiveReport from '../components/dashboard/ComprehensiveReport';
 
 export default function Analytics() {
   const navigate = useNavigate();
+  const [timeRange, setTimeRange] = useState(30);
+  const [showWidgetSelector, setShowWidgetSelector] = useState(false);
+  const [activeWidgets, setActiveWidgets] = useState([
+    'metrics', 'trends', 'severity', 'topVulns', 'language', 'comparison', 'threatIntel', 'scoreHistory'
+  ]);
 
-  const { data: scans = [], isLoading: scansLoading } = useQuery({
+  const { data: allScans = [], isLoading: scansLoading } = useQuery({
     queryKey: ['codeScans'],
-    queryFn: () => base44.entities.CodeScan.list('-created_date', 100)
+    queryFn: () => base44.entities.CodeScan.list('-created_date', 200)
   });
 
-  const { data: metrics = [], isLoading: metricsLoading } = useQuery({
+  const { data: allMetrics = [], isLoading: metricsLoading } = useQuery({
     queryKey: ['vulnerabilityMetrics'],
-    queryFn: () => base44.entities.VulnerabilityMetric.list('-created_date', 500)
+    queryFn: () => base44.entities.VulnerabilityMetric.list('-created_date', 1000)
   });
+
+  // Filter data by time range
+  const filterByTimeRange = (data) => {
+    if (timeRange === 'all') return data;
+    const cutoffDate = new Date();
+    cutoffDate.setDate(cutoffDate.getDate() - timeRange);
+    return data.filter(item => new Date(item.created_date) >= cutoffDate);
+  };
+
+  const scans = filterByTimeRange(allScans);
+  const metrics = filterByTimeRange(allMetrics);
 
   const isLoading = scansLoading || metricsLoading;
+
+  const toggleWidget = (widgetId) => {
+    setActiveWidgets(prev =>
+      prev.includes(widgetId)
+        ? prev.filter(id => id !== widgetId)
+        : [...prev, widgetId]
+    );
+  };
 
   if (isLoading) {
     return (
@@ -67,17 +96,29 @@ export default function Analytics() {
                 </div>
               </div>
               
-              <div className="flex gap-3">
+              <div className="flex gap-3 items-center">
+                <TimeRangeFilter
+                  selectedRange={timeRange}
+                  onRangeChange={setTimeRange}
+                />
                 {scans.length > 0 && (
-                  <AnalyticsReport scans={scans} metrics={metrics} />
+                  <ComprehensiveReport scans={scans} metrics={metrics} timeRange={timeRange} />
                 )}
+                <Button
+                  variant="outline"
+                  onClick={() => setShowWidgetSelector(true)}
+                  className="border-cyan-500/30 text-cyan-400 hover:bg-cyan-500/10"
+                >
+                  <LayoutIcon className="w-4 h-4 mr-2" />
+                  Customize
+                </Button>
                 <Button
                   variant="outline"
                   onClick={() => navigate('/Scanner')}
                   className="border-cyan-500/30 text-cyan-400 hover:bg-cyan-500/10"
                 >
                   <Shield className="w-4 h-4 mr-2" />
-                  Back to Scanner
+                  Scanner
                 </Button>
               </div>
             </div>
@@ -106,62 +147,127 @@ export default function Analytics() {
               </Button>
             </motion.div>
           ) : (
-            <div className="space-y-8">
-              {/* Overview Cards */}
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-              >
-                <MetricsOverview scans={scans} metrics={metrics} />
-              </motion.div>
+            <div className="space-y-6">
+              {/* Metrics Overview */}
+              {activeWidgets.includes('metrics') && (
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -20 }}
+                >
+                  <MetricsOverview scans={scans} metrics={metrics} />
+                </motion.div>
+              )}
 
-              {/* Charts Grid */}
+              {/* Main Dashboard Grid */}
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.1 }}
-                >
-                  <VulnerabilityTrends scans={scans} />
-                </motion.div>
+                {activeWidgets.includes('trends') && (
+                  <motion.div
+                    layout
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -20 }}
+                  >
+                    <DashboardWidget title="Vulnerability Trends">
+                      <VulnerabilityTrends scans={scans} />
+                    </DashboardWidget>
+                  </motion.div>
+                )}
 
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.2 }}
-                >
-                  <SecurityScoreTrend scans={scans} />
-                </motion.div>
+                {activeWidgets.includes('scoreHistory') && (
+                  <motion.div
+                    layout
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -20 }}
+                  >
+                    <DashboardWidget title="Security Score History">
+                      <SecurityScoreTrend scans={scans} />
+                    </DashboardWidget>
+                  </motion.div>
+                )}
 
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.3 }}
-                >
-                  <SeverityDistribution metrics={metrics} />
-                </motion.div>
+                {activeWidgets.includes('severity') && (
+                  <motion.div
+                    layout
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -20 }}
+                  >
+                    <DashboardWidget title="Severity Distribution">
+                      <SeverityDistribution metrics={metrics} />
+                    </DashboardWidget>
+                  </motion.div>
+                )}
 
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.4 }}
-                >
-                  <LanguageBreakdown metrics={metrics} />
-                </motion.div>
+                {activeWidgets.includes('language') && (
+                  <motion.div
+                    layout
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -20 }}
+                  >
+                    <DashboardWidget title="Language Breakdown">
+                      <LanguageBreakdown metrics={metrics} />
+                    </DashboardWidget>
+                  </motion.div>
+                )}
+
+                {activeWidgets.includes('comparison') && (
+                  <motion.div
+                    layout
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -20 }}
+                  >
+                    <DashboardWidget title="File Comparison">
+                      <FileComparisonWidget scans={scans} />
+                    </DashboardWidget>
+                  </motion.div>
+                )}
+
+                {activeWidgets.includes('threatIntel') && (
+                  <motion.div
+                    layout
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -20 }}
+                  >
+                    <DashboardWidget title="Threat Intelligence Summary">
+                      <ThreatIntelWidget scans={scans} />
+                    </DashboardWidget>
+                  </motion.div>
+                )}
               </div>
 
-              {/* Full Width Chart */}
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.5 }}
-              >
-                <TopVulnerabilities metrics={metrics} />
-              </motion.div>
+              {/* Full Width Widgets */}
+              {activeWidgets.includes('topVulns') && (
+                <motion.div
+                  layout
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -20 }}
+                >
+                  <DashboardWidget title="Top Vulnerabilities">
+                    <TopVulnerabilities metrics={metrics} />
+                  </DashboardWidget>
+                </motion.div>
+              )}
             </div>
           )}
         </div>
       </div>
+
+      {/* Widget Selector Modal */}
+      <AnimatePresence>
+        {showWidgetSelector && (
+          <WidgetSelector
+            activeWidgets={activeWidgets}
+            onToggleWidget={toggleWidget}
+            onClose={() => setShowWidgetSelector(false)}
+          />
+        )}
+      </AnimatePresence>
     </div>
   );
 }
