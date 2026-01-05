@@ -6,7 +6,7 @@ import { Shield, Loader2, ArrowLeft, BarChart3 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useNavigate } from 'react-router-dom';
-import { APP_VERSION } from '../config/version';
+import { APP_VERSION } from '../components/AppVersion';
 import CodeInput from '../components/scanner/CodeInput';
 import ScanResults from '../components/scanner/ScanResults';
 import ScanHistory from '../components/scanner/ScanHistory';
