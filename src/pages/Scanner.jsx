@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { base44 } from '@/api/base44Client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { motion } from 'framer-motion';
-import { Shield, Loader2, ArrowLeft, BarChart3 } from 'lucide-react';
+import { Shield, Loader2, ArrowLeft, BarChart3, Activity } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useNavigate } from 'react-router-dom';
@@ -299,6 +299,14 @@ Be specific and cite actual CVE numbers, CISA advisories, or NIST NVD data when 
                 >
                   <BarChart3 className="w-4 h-4 mr-2" />
                   Analytics
+                </Button>
+                <Button
+                  variant="outline"
+                  onClick={() => navigate('/Monitoring')}
+                  className="border-cyan-500/30 text-cyan-400 hover:bg-cyan-500/10"
+                >
+                  <Activity className="w-4 h-4 mr-2" />
+                  Monitoring
                 </Button>
                 {view === 'results' && (
                   <Button
