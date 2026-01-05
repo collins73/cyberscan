@@ -122,9 +122,18 @@ Also provide an overall security score from 0-100 (100 being most secure).`,
       // Save scan to database
       const savedScan = await createScanMutation.mutateAsync(scanData);
 
+      // Enrich vulnerabilities with threat intelligence
+      const enrichedVulnerabilities = await enrichVulnerabilitiesWithThreatIntel(
+        response.vulnerabilities || [],
+        language
+      );
+
+      // Update scan data with enriched vulnerabilities
+      scanData.vulnerabilities = enrichedVulnerabilities;
+
       // Track metrics for each vulnerability
-      if (response.vulnerabilities && response.vulnerabilities.length > 0) {
-        for (const vuln of response.vulnerabilities) {
+      if (enrichedVulnerabilities && enrichedVulnerabilities.length > 0) {
+        for (const vuln of enrichedVulnerabilities) {
           await createMetricMutation.mutateAsync({
             vulnerability_type: vuln.title,
             severity: vuln.severity,
@@ -144,6 +153,79 @@ Also provide an overall security score from 0-100 (100 being most secure).`,
     } finally {
       setIsScanning(false);
     }
+  };
+
+  const enrichVulnerabilitiesWithThreatIntel = async (vulnerabilities, language) => {
+    // Process vulnerabilities in parallel for speed
+    const enrichmentPromises = vulnerabilities.map(async (vuln) => {
+      try {
+        const threatIntel = await base44.integrations.Core.InvokeLLM({
+          prompt: `You are a cybersecurity threat intelligence analyst. Research the following vulnerability type and provide comprehensive threat intelligence.
+
+Vulnerability: ${vuln.title}
+Severity: ${vuln.severity}
+Context: ${vuln.description}
+Language: ${language}
+
+Search for and provide:
+1. Related CVE identifiers (if any exist for this vulnerability type)
+2. CVSS scores and exploitability metrics
+3. Known attack patterns and real-world exploits
+4. Active threat campaigns using this vulnerability
+5. Prevalence and frequency in the wild
+6. Mitigation priority recommendations
+
+Be specific and cite actual CVE numbers, CISA advisories, or NIST NVD data when available.`,
+          add_context_from_internet: true,
+          response_json_schema: {
+            type: "object",
+            properties: {
+              related_cves: {
+                type: "array",
+                items: {
+                  type: "object",
+                  properties: {
+                    cve_id: { type: "string" },
+                    cvss_score: { type: "string" },
+                    description: { type: "string" }
+                  }
+                }
+              },
+              exploitability: {
+                type: "object",
+                properties: {
+                  ease_of_exploit: { type: "string" },
+                  known_exploits: { type: "string" },
+                  attack_complexity: { type: "string" }
+                }
+              },
+              attack_patterns: {
+                type: "array",
+                items: { type: "string" }
+              },
+              threat_landscape: {
+                type: "object",
+                properties: {
+                  active_campaigns: { type: "string" },
+                  prevalence: { type: "string" },
+                  mitigation_priority: { type: "string" }
+                }
+              }
+            }
+          }
+        });
+
+        return {
+          ...vuln,
+          threat_intelligence: threatIntel
+        };
+      } catch (error) {
+        console.error('Failed to enrich vulnerability:', error);
+        return vuln;
+      }
+    });
+
+    return await Promise.all(enrichmentPromises);
   };
 
   const detectLanguage = (fileName, code) => {
