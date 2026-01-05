@@ -77,6 +77,7 @@ For each vulnerability found, provide:
 4. Line number or code location if identifiable
 5. The vulnerable code snippet
 6. Specific recommendation to fix it
+7. A secure code example showing how to properly implement the fix with actual working code (not pseudo-code)
 
 Also provide an overall security score from 0-100 (100 being most secure).`,
         response_json_schema: {
@@ -95,9 +96,10 @@ Also provide an overall security score from 0-100 (100 being most secure).`,
                   description: { type: "string" },
                   line_number: { type: "string" },
                   code_example: { type: "string" },
-                  recommendation: { type: "string" }
+                  recommendation: { type: "string" },
+                  secure_code_example: { type: "string" }
                 },
-                required: ["title", "severity", "description", "recommendation"]
+                required: ["title", "severity", "description", "recommendation", "secure_code_example"]
               }
             },
             overall_score: { type: "number" }
