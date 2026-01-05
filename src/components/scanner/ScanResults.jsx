@@ -7,7 +7,7 @@ import VulnerabilityCard from './VulnerabilityCard';
 import ReportGenerator from '../reports/ReportGenerator';
 
 export default function ScanResults({ scanData }) {
-  const { vulnerabilities, overall_score, file_name, scan_duration } = scanData;
+  const { vulnerabilities, overall_score, file_name, scan_duration, code_snippet } = scanData;
 
   const criticalCount = vulnerabilities?.filter(v => v.severity === 'critical').length || 0;
   const highCount = vulnerabilities?.filter(v => v.severity === 'high').length || 0;
