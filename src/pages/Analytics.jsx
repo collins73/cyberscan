@@ -17,6 +17,7 @@ import ThreatIntelWidget from '../components/dashboard/ThreatIntelWidget';
 import TimeRangeFilter from '../components/dashboard/TimeRangeFilter';
 import WidgetSelector from '../components/dashboard/WidgetSelector';
 import ComprehensiveReport from '../components/dashboard/ComprehensiveReport';
+import OptimizationRecommendations from '../components/system/OptimizationRecommendations';
 
 export default function Analytics() {
   const navigate = useNavigate();
@@ -34,6 +35,16 @@ export default function Analytics() {
   const { data: allMetrics = [], isLoading: metricsLoading } = useQuery({
     queryKey: ['vulnerabilityMetrics'],
     queryFn: () => base44.entities.VulnerabilityMetric.list('-created_date', 1000)
+  });
+
+  const { data: deployments = [] } = useQuery({
+    queryKey: ['deployedApplications'],
+    queryFn: () => base44.entities.DeployedApplication.list('-created_date', 50)
+  });
+
+  const { data: alerts = [] } = useQuery({
+    queryKey: ['securityAlerts'],
+    queryFn: () => base44.entities.SecurityAlert.list('-created_date', 100)
   });
 
   // Filter data by time range
@@ -148,6 +159,19 @@ export default function Analytics() {
             </motion.div>
           ) : (
             <div className="space-y-6">
+              {/* Optimization Recommendations */}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+              >
+                <OptimizationRecommendations 
+                  scans={allScans} 
+                  deployments={deployments} 
+                  alerts={alerts}
+                  metrics={allMetrics} 
+                />
+              </motion.div>
+
               {/* Metrics Overview */}
               {activeWidgets.includes('metrics') && (
                 <motion.div
