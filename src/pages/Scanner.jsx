@@ -6,7 +6,7 @@ import { Shield, Loader2, ArrowLeft, BarChart3, Activity } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useNavigate } from 'react-router-dom';
-import { APP_VERSION } from '../components/AppVersion';
+import { getAppVersion, APP_VERSION } from '../components/AppVersion';
 import CodeInput from '../components/scanner/CodeInput';
 import ScanResults from '../components/scanner/ScanResults';
 import ScanHistory from '../components/scanner/ScanHistory';
@@ -22,6 +22,18 @@ export default function Scanner() {
     queryKey: ['codeScans'],
     queryFn: () => base44.entities.CodeScan.list('-created_date', 10)
   });
+
+  const { data: deployments = [] } = useQuery({
+    queryKey: ['deployedApplications'],
+    queryFn: () => base44.entities.DeployedApplication.list('-created_date', 5)
+  });
+
+  const { data: alerts = [] } = useQuery({
+    queryKey: ['securityAlerts'],
+    queryFn: () => base44.entities.SecurityAlert.list('-created_date', 5)
+  });
+
+  const dynamicVersion = getAppVersion(scans, deployments, alerts);
 
   const createScanMutation = useMutation({
     mutationFn: (scanData) => base44.entities.CodeScan.create(scanData),
@@ -282,7 +294,7 @@ Be specific and cite actual CVE numbers, CISA advisories, or NIST NVD data when 
                       CyberScan
                     </h1>
                     <Badge className="bg-cyan-500/20 text-cyan-400 border-cyan-500/30 text-xs">
-                      v{APP_VERSION}
+                      v{dynamicVersion}
                     </Badge>
                   </div>
                   <p className="text-cyan-400 text-sm font-medium">
