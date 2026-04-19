@@ -103,13 +103,13 @@ Return ONLY the complete fixed file content with ALL vulnerabilities addressed. 
 
     // Step 7: Create Pull Request
     const vulnTitles = vulnerabilities.map(v => `- [${v.severity?.toUpperCase()}] ${v.title}`).join('\n');
-    const prBody = `## 🔒 CyberScan Auto-Fix\n\n${summary}\n\n### Vulnerabilities Fixed\n${vulnTitles}\n\n### Changes Applied\n${changes.map(c => `- ${c}`).join('\n')}\n\n> Generated automatically by [CyberScan](https://cyberscan.app) AI security scanner.`;
+    const prBody = `## 🔒 CodeGuard Auto-Fix\n\n${summary}\n\n### Vulnerabilities Fixed\n${vulnTitles}\n\n### Changes Applied\n${changes.map(c => `- ${c}`).join('\n')}\n\n> Generated automatically by [CodeGuard](https://codeguard.app) AI security scanner.`;
 
     const prRes = await fetch(`https://api.github.com/repos/${repoFullName}/pulls`, {
       method: 'POST',
       headers: { Authorization: `Bearer ${accessToken}`, 'Content-Type': 'application/json', 'User-Agent': 'CyberScan' },
       body: JSON.stringify({
-        title: `[CyberScan] Security Auto-Fix: ${vulnerabilities.length} vulnerabilit${vulnerabilities.length === 1 ? 'y' : 'ies'} in ${fileName || filePath}`,
+        title: `[CodeGuard] Security Auto-Fix: ${vulnerabilities.length} vulnerabilit${vulnerabilities.length === 1 ? 'y' : 'ies'} in ${fileName || filePath}`,
         body: prBody,
         head: newBranch,
         base: baseBranch

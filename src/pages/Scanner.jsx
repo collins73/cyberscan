@@ -289,7 +289,7 @@ Be specific and cite actual CVE numbers, CISA advisories, or NIST NVD data when 
                 </div>
                 <div>
                   <div className="flex items-center gap-3">
-                    <h1 className="text-3xl font-bold text-white tracking-tight">CyberScan</h1>
+                    <h1 className="text-3xl font-bold text-white tracking-tight">CodeGuard</h1>
                     <Badge className="bg-cyan-500/20 text-cyan-400 border-cyan-500/30 text-xs">v{dynamicVersion}</Badge>
                   </div>
                   <p className="text-cyan-400 text-sm font-medium">AI-Powered Security Analysis</p>

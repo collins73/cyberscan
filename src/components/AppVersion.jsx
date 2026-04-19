@@ -1,4 +1,4 @@
-// CyberScan Version Tracking - Dynamic runtime versioning
+// CodeGuard Version Tracking - Dynamic runtime versioning
 
 export const getAppVersion = (scans = [], deployments = [], alerts = []) => {
   const major = 3; // Current major version with monitoring & CI/CD
