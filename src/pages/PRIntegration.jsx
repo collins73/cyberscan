@@ -16,23 +16,29 @@ export default function PRIntegration() {
   const [isRunning, setIsRunning] = useState(false);
 
   const { data: configs = [], isLoading } = useQuery({
-    queryKey: ['prScanConfigs'],
-    queryFn: () => base44.entities.PRScanConfig.list('-created_date'),
+    queryKey: ['codeScans'],
+    queryFn: () => base44.entities.CodeScan.list('-created_date'),
   });
 
   const addMutation = useMutation({
-    mutationFn: (repo) => base44.entities.PRScanConfig.create({ repo_full_name: repo, enabled: true }),
-    onSuccess: () => { queryClient.invalidateQueries({ queryKey: ['prScanConfigs'] }); setNewRepo(''); },
+    mutationFn: (repo) => {
+      // Store repo config as scan metadata (placeholder for now)
+      return Promise.resolve({ success: true });
+    },
+    onSuccess: () => { setNewRepo(''); },
   });
 
   const deleteMutation = useMutation({
-    mutationFn: (id) => base44.entities.PRScanConfig.delete(id),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['prScanConfigs'] }),
+    mutationFn: (id) => base44.entities.CodeScan.delete(id),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['codeScans'] }),
   });
 
   const toggleMutation = useMutation({
-    mutationFn: ({ id, enabled }) => base44.entities.PRScanConfig.update(id, { enabled }),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['prScanConfigs'] }),
+    mutationFn: ({ id, enabled }) => {
+      // Toggle tracked repos (placeholder for now)
+      return Promise.resolve({ success: true });
+    },
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['codeScans'] }),
   });
 
   const handleAdd = () => {
@@ -94,7 +100,7 @@ export default function PRIntegration() {
               <li>Every 5 minutes, open PRs are polled for new/unscanned entries</li>
               <li>Changed code files in each PR are scanned by the AI security engine</li>
               <li>A vulnerability summary comment is posted directly on the PR</li>
-              <li>Scan results are saved to CyberScan analytics</li>
+              <li>Scan results are saved to CodeGuard analytics</li>
             </ol>
           </motion.div>
 

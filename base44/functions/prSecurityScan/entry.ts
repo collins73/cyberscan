@@ -49,7 +49,7 @@ Deno.serve(async (req) => {
 
         // Check if we already commented on this PR (look for our bot marker)
         const comments = await githubFetch(`/repos/${owner}/${repo}/issues/${prNumber}/comments`, accessToken);
-        const alreadyCommented = comments.some(c => c.body && c.body.includes('<!-- cyberscan-bot -->'));
+        const alreadyCommented = comments.some(c => c.body && c.body.includes('<!-- codeguard-bot -->'));
         if (alreadyCommented) continue;
 
         // Get changed files
@@ -118,8 +118,8 @@ Focus ONLY on the added lines (starting with +). Identify security vulnerabiliti
         const statusText = avgScore >= 80 ? 'PASS' : avgScore >= 60 ? 'WARNING' : 'FAIL';
 
         // Build comment markdown
-        let comment = `<!-- cyberscan-bot -->
-## 🛡️ CyberScan Security Analysis
+        let comment = `<!-- codeguard-bot -->
+        ## 🛡️ CodeGuard Security Analysis
 
 ${scoreEmoji} **Security Score: ${avgScore}/100** — ${statusText}
 
@@ -146,11 +146,11 @@ ${scoreEmoji} **Security Score: ${avgScore}/100** — ${statusText}
           }
 
           if (allVulnerabilities.length > 10) {
-            comment += `\n> ⚠️ ${allVulnerabilities.length - 10} additional findings not shown. View full report in [CyberScan Analytics](/Analytics).\n`;
+            comment += `\n> ⚠️ ${allVulnerabilities.length - 10} additional findings not shown. View full report in [CodeGuard Analytics](/Analytics).\n`;
           }
-        }
+          }
 
-        comment += `\n---\n*Powered by [CyberScan](/) AI Security Scanner • [View Full Analytics](/Analytics)*`;
+          comment += `\n---\n*Powered by [CodeGuard](/) AI Security Scanner • [View Full Analytics](/Analytics)*`;
 
         // Post comment on PR
         await githubFetch(`/repos/${owner}/${repo}/issues/${prNumber}/comments`, accessToken, {
