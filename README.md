@@ -1,6 +1,6 @@
 # 🛡️ CyberScan — AI-Powered Security Analysis Platform
 
-CyberScan is a comprehensive, AI-driven security vulnerability scanner built to help developers and security teams identify, analyze, and remediate code vulnerabilities before they reach production.
+CyberScan is a comprehensive, AI-driven security vulnerability scanner built to help developers and security teams identify, analyze, and remediate code vulnerabilities before they reach production. It combines deep static analysis, real-world threat intelligence, adversary emulation, and developer community sharing — all in one platform.
 
 ---
 
@@ -32,8 +32,17 @@ CyberScan is a comprehensive, AI-driven security vulnerability scanner built to 
 ### 🔴 Red Team Dashboard
 - Aggregated vulnerability explorer across all scans
 - Severity and status filters
-- Exploit simulation interface
+- **Exploit Simulation Environment** — animated terminal output, kill chain visualization, and blast-radius impact mapping per vulnerability
 - CSV export of all findings
+
+### 🎯 Adversary Simulation Module *(New)*
+- Select from **8 real-world threat actor profiles**: APT28 (Fancy Bear), Lazarus Group, APT41 (Double Dragon), FIN7, LAPSUS$, REvil, Script Kiddies, and Malicious Insider
+- Each profile includes nation/origin, sophistication rating, MITRE ATT&CK TTPs, signature tools, and primary targets
+- AI re-analyzes your actual scan vulnerabilities through the lens of that specific actor's known behaviors
+- Generates a full **attack path report** across all MITRE ATT&CK phases (Initial Access → Exfiltration)
+- Shows which vulnerabilities the actor would exploit, why, and with which specific technique (mapped to ATT&CK TTP IDs)
+- Overall risk score, estimated dwell time, data at risk, and actor-specific defensive recommendations
+- Includes OPSEC notes explaining how each actor avoids detection
 
 ### 🏗️ Deployment Monitoring
 - Track deployed applications across development, staging, and production environments
@@ -65,6 +74,13 @@ CyberScan is a comprehensive, AI-driven security vulnerability scanner built to 
 - Integration guides for GitHub Actions, GitLab CI, Jenkins, and webhook payloads
 - Embed CyberScan checks directly into your deployment pipeline
 
+### 💼 LinkedIn Post Publisher *(New)*
+- Generate and publish developer-focused security content directly to LinkedIn
+- **5 AI-powered post templates**: Security Tips, Vulnerability Alerts, Best Practices, Threat Intel, and AI Security
+- Posts are auto-enriched with context from your real scan findings
+- One-click publish to your LinkedIn network via OAuth integration
+- Helps security engineers share insights and grow their professional presence
+
 ---
 
 ## 🖥️ How to Use
@@ -81,26 +97,38 @@ CyberScan is a comprehensive, AI-driven security vulnerability scanner built to 
 3. Customize widgets via the **Customize** button
 4. Export a full compliance report using **Export Comprehensive PDF** or **Export Comprehensive CSV**
 
-### 3. Set Up PR Scanning
+### 3. Run an Adversary Simulation
+1. Click **Red Team** → **Adversary Sim** in the header
+2. Select a threat actor profile (e.g. APT28, Lazarus Group, Script Kiddie)
+3. Review their TTPs and click **Launch Simulation**
+4. The AI maps your real vulnerabilities to that actor's attack patterns across all kill chain phases
+5. Review per-phase results, matched vulnerabilities, and targeted defensive recommendations
+
+### 4. Set Up PR Scanning
 1. Click **PR Scan** in the Scanner header
 2. Add your GitHub repository in `owner/repo` format (e.g. `acme/backend-api`)
 3. Enable the config — CyberScan will poll for new PRs every 5 minutes and post scan results as PR comments
 
-### 4. Schedule Recurring Scans
+### 5. Schedule Recurring Scans
 1. Click **Schedule** in the Scanner header
 2. Enter a target (repository URL or file pattern), frequency, and notification preferences
 3. CyberScan will run automatically on the defined schedule
 
-### 5. Manage Policies
+### 6. Manage Policies
 1. Click **Policies** in the Scanner header
 2. Create a policy tied to a compliance framework
 3. Add rules (e.g. "max 0 critical vulnerabilities")
 4. Evaluate any scan against the policy to get a compliance score
 
-### 6. Monitor Deployments
+### 7. Monitor Deployments
 1. Click **Monitoring** in the Scanner header
 2. Add your deployed applications with environment and version info
 3. Run security health checks to correlate deployment state with vulnerability findings
+
+### 8. Share on LinkedIn
+1. Click **Post** in the Scanner header
+2. Choose an AI template or write your own post
+3. Click **Post to LinkedIn** to publish instantly to your network
 
 ---
 
@@ -108,9 +136,9 @@ CyberScan is a comprehensive, AI-driven security vulnerability scanner built to 
 
 - **Frontend:** React, Tailwind CSS, Framer Motion, Recharts, shadcn/ui
 - **Backend:** Base44 serverless functions (Deno)
-- **AI Engine:** LLM-based vulnerability analysis with internet-augmented threat intelligence
+- **AI Engine:** LLM-based vulnerability analysis (Claude Sonnet for adversary simulation) with internet-augmented threat intelligence
 - **Database:** Base44 managed entity store
-- **Integrations:** GitHub API (PR scanning and commenting)
+- **Integrations:** GitHub API (PR scanning and commenting), LinkedIn API (post publishing)
 
 ---
 
@@ -118,26 +146,36 @@ CyberScan is a comprehensive, AI-driven security vulnerability scanner built to 
 
 ```
 pages/
-  Scanner.jsx          — Main code scanner UI
-  Analytics.jsx        — Metrics and reporting dashboard
-  ThreatIntel.jsx      — Threat intelligence center
-  RedTeam.jsx          — Red team / exploit simulation
-  PolicyEngine.jsx     — Compliance policy management
-  AlertsDashboard.jsx  — Security alert management
-  Monitoring.jsx       — Deployment monitoring
-  PRIntegration.jsx    — GitHub PR scan configuration
+  Scanner.jsx               — Main code scanner UI
+  Analytics.jsx             — Metrics and reporting dashboard
+  ThreatIntel.jsx           — Threat intelligence center
+  RedTeam.jsx               — Red team / exploit simulation
+  AdversarySimulation.jsx   — TTP-based threat actor attack emulation
+  PolicyEngine.jsx          — Compliance policy management
+  AlertsDashboard.jsx       — Security alert management
+  Monitoring.jsx            — Deployment monitoring
+  PRIntegration.jsx         — GitHub PR scan configuration
+  LinkedInPost.jsx          — LinkedIn post composer and publisher
+
+components/redteam/adversary/
+  ThreatActorProfiles.js    — 8 threat actor definitions with TTPs
+  ThreatActorCard.jsx       — Actor selection card UI
+  ThreatActorDetail.jsx     — Full TTP breakdown display
+  AdversarySimResults.jsx   — Simulation results with attack path analysis
 
 functions/
-  prSecurityScan.js    — GitHub PR polling and AI scan + comment bot
+  prSecurityScan.js         — GitHub PR polling and AI scan + comment bot
+  linkedinPost.js           — LinkedIn post publishing via OAuth
+  createReadme.js           — GitHub README updater
 
 entities/
-  CodeScan             — Scan results storage
-  VulnerabilityMetric  — Aggregated vulnerability metrics
-  ScheduledScan        — Scheduled scan configurations
-  SecurityPolicy       — Policy definitions
-  PolicyEvaluation     — Policy evaluation results
-  DeployedApplication  — Monitored deployments
-  SecurityAlert        — Active security alerts
+  CodeScan                  — Scan results storage
+  VulnerabilityMetric       — Aggregated vulnerability metrics
+  ScheduledScan             — Scheduled scan configurations
+  SecurityPolicy            — Policy definitions
+  PolicyEvaluation          — Policy evaluation results
+  DeployedApplication       — Monitored deployments
+  SecurityAlert             — Active security alerts
 ```
 
 ---
