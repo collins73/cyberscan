@@ -125,6 +125,14 @@ export default function Analytics() {
                 </Button>
                 <Button
                   variant="outline"
+                  onClick={() => navigate('/ThreatIntel')}
+                  className="border-orange-500/30 text-orange-400 hover:bg-orange-500/10"
+                >
+                  <Globe className="w-4 h-4 mr-2" />
+                  Threat Intel
+                </Button>
+                <Button
+                  variant="outline"
                   onClick={() => navigate('/Scanner')}
                   className="border-cyan-500/30 text-cyan-400 hover:bg-cyan-500/10"
                 >
