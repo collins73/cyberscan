@@ -1,6 +1,6 @@
 # 🛡️ CodeGuard — AI-Powered Security Analysis Platform
 
-CyberScan is a comprehensive, AI-driven security vulnerability scanner built to help developers and security teams identify, analyze, and remediate code vulnerabilities before they reach production. It combines deep static analysis, real-world threat intelligence, adversary emulation, and developer community sharing — all in one platform.
+CodeGuard is a comprehensive, AI-driven security vulnerability scanner built to help developers and security teams identify, analyze, and remediate code vulnerabilities before they reach production. It combines deep static analysis, real-world threat intelligence, adversary emulation, and developer community sharing — all in one platform.
 
 ---
 
