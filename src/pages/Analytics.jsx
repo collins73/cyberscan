@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { base44 } from '@/api/base44Client';
 import { useQuery } from '@tanstack/react-query';
 import { motion, AnimatePresence } from 'framer-motion';
-import { BarChart3, Shield, Loader2, Settings, Layout as LayoutIcon } from 'lucide-react';
+import { BarChart3, Shield, Loader2, Settings, Layout as LayoutIcon, Globe } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import MetricsOverview from '../components/analytics/MetricsOverview';
