@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { base44 } from '@/api/base44Client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { motion } from 'framer-motion';
-import { Shield, Loader2, ArrowLeft, BarChart3, Activity, Globe } from 'lucide-react';
+import { Shield, Loader2, ArrowLeft, BarChart3, Activity, Globe, Crosshair } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useNavigate } from 'react-router-dom';
@@ -70,17 +70,25 @@ File: ${fileName}
 Language: ${language || 'Unknown'}
 
 Please identify ALL security vulnerabilities including but not limited to:
-- SQL Injection vulnerabilities
-- Cross-Site Scripting (XSS) 
-- Hardcoded secrets/credentials
-- Insecure authentication/authorization
-- Cryptographic issues
-- Input validation issues
-- Path traversal vulnerabilities
-- Command injection
-- Insecure dependencies
-- Memory safety issues
-- Logic flaws
+- SQL Injection (all forms: classic, blind, time-based)
+- Cross-Site Scripting (XSS: reflected, stored, DOM-based)
+- Command Injection / OS Injection
+- Remote Code Execution (RCE) vectors
+- Hardcoded secrets, API keys, passwords, tokens
+- Insecure authentication & broken access control (IDOR, privilege escalation)
+- Cryptographic weaknesses (weak ciphers, MD5/SHA1 hashes, insecure RNG)
+- Path traversal / Directory traversal
+- Server-Side Request Forgery (SSRF)
+- XML External Entity (XXE) injection
+- Insecure deserialization
+- LDAP / NoSQL / Header injection
+- Race conditions and TOCTOU vulnerabilities
+- Memory safety: buffer overflows, use-after-free, integer overflow
+- Insecure direct object references
+- Open redirect vulnerabilities
+- Logic flaws and business logic bypasses
+- Dependency/supply chain vulnerabilities
+- Missing security headers and misconfigurations
 
 For each vulnerability found, provide:
 1. A clear title
@@ -327,6 +335,14 @@ Be specific and cite actual CVE numbers, CISA advisories, or NIST NVD data when 
                 >
                   <Globe className="w-4 h-4 mr-2" />
                   Threat Intel
+                </Button>
+                <Button
+                  variant="outline"
+                  onClick={() => navigate('/RedTeam')}
+                  className="border-red-500/30 text-red-400 hover:bg-red-500/10"
+                >
+                  <Crosshair className="w-4 h-4 mr-2" />
+                  Red Team
                 </Button>
                 {view === 'results' && (
                   <Button
