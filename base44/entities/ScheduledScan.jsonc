@@ -1,0 +1,99 @@
+{
+  "name": "ScheduledScan",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Name of the scheduled scan task"
+    },
+    "target": {
+      "type": "string",
+      "description": "Repository URL, file path, or target identifier"
+    },
+    "target_type": {
+      "type": "string",
+      "enum": [
+        "repository",
+        "url",
+        "code_snippet"
+      ],
+      "default": "repository",
+      "description": "Type of scan target"
+    },
+    "frequency": {
+      "type": "string",
+      "enum": [
+        "daily",
+        "weekly",
+        "monthly"
+      ],
+      "default": "weekly",
+      "description": "How often to run the scan"
+    },
+    "day_of_week": {
+      "type": "string",
+      "description": "For weekly scans: day to run (monday-sunday)"
+    },
+    "time_of_day": {
+      "type": "string",
+      "description": "Time to run the scan (HH:MM)"
+    },
+    "notify_on_new_vulns": {
+      "type": "boolean",
+      "default": true,
+      "description": "Alert when new vulnerabilities are detected"
+    },
+    "notify_on_score_drop": {
+      "type": "boolean",
+      "default": true,
+      "description": "Alert when security score drops"
+    },
+    "min_severity_to_alert": {
+      "type": "string",
+      "enum": [
+        "critical",
+        "high",
+        "medium",
+        "low"
+      ],
+      "default": "high",
+      "description": "Minimum severity level to trigger alert"
+    },
+    "enabled": {
+      "type": "boolean",
+      "default": true
+    },
+    "last_run": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Last time this scan ran"
+    },
+    "next_run": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Next scheduled run time"
+    },
+    "last_score": {
+      "type": "number",
+      "description": "Security score from last scan"
+    },
+    "last_vuln_count": {
+      "type": "number",
+      "description": "Vulnerability count from last scan"
+    },
+    "run_count": {
+      "type": "number",
+      "default": 0,
+      "description": "Total times this scan has run"
+    },
+    "notify_email": {
+      "type": "string",
+      "description": "Email address for notifications"
+    }
+  },
+  "required": [
+    "name",
+    "target",
+    "frequency"
+  ]
+}

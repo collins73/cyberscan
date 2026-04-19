@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { base44 } from '@/api/base44Client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { motion } from 'framer-motion';
-import { Shield, Loader2, ArrowLeft, BarChart3, Activity, Globe, Crosshair, Settings } from 'lucide-react';
+import { Shield, Loader2, ArrowLeft, BarChart3, Activity, Globe, Crosshair, Settings, Bell } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useNavigate } from 'react-router-dom';
@@ -10,6 +10,7 @@ import { getAppVersion, APP_VERSION } from '../components/AppVersion';
 import CodeInput from '../components/scanner/CodeInput';
 import ScanResults from '../components/scanner/ScanResults';
 import ScanHistory from '../components/scanner/ScanHistory';
+import ScheduleManager from '../components/scanner/ScheduleManager';
 
 export default function Scanner() {
   const navigate = useNavigate();
@@ -352,6 +353,14 @@ Be specific and cite actual CVE numbers, CISA advisories, or NIST NVD data when 
                   <Settings className="w-4 h-4 mr-2" />
                   Policies
                 </Button>
+                <Button
+                  variant="outline"
+                  onClick={() => navigate('/Alerts')}
+                  className="border-amber-500/30 text-amber-400 hover:bg-amber-500/10"
+                >
+                  <Bell className="w-4 h-4 mr-2" />
+                  Alerts
+                </Button>
                 {view === 'results' && (
                   <Button
                     onClick={handleBackToInput}
@@ -400,7 +409,7 @@ Be specific and cite actual CVE numbers, CISA advisories, or NIST NVD data when 
                 </motion.div>
               </div>
               
-              <div className="lg:col-span-1">
+              <div className="lg:col-span-1 space-y-8">
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
@@ -410,6 +419,13 @@ Be specific and cite actual CVE numbers, CISA advisories, or NIST NVD data when 
                     History
                   </h2>
                   <ScanHistory scans={scans} onViewScan={handleViewScan} />
+                </motion.div>
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.2 }}
+                >
+                  <ScheduleManager />
                 </motion.div>
               </div>
             </div>
