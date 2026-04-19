@@ -11,7 +11,6 @@ import ThreatIntel from './pages/ThreatIntel';
 import RedTeam from './pages/RedTeam';
 import PolicyEngine from './pages/PolicyEngine';
 import AlertsDashboard from './pages/AlertsDashboard';
-import AlertsDashboard from './pages/AlertsDashboard';
 import { AuthProvider, useAuth } from '@/lib/AuthContext';
 import UserNotRegisteredError from '@/components/UserNotRegisteredError';
 
