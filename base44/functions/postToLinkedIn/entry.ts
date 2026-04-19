@@ -14,7 +14,7 @@ Deno.serve(async (req) => {
   const profile = await profileRes.json();
   const authorUrn = `urn:li:person:${profile.sub}`;
 
-  const postText = `🔐 Just launched CyberScan — an AI-powered security platform that scans your code for vulnerabilities in seconds.
+  const postText = `🔐 Just launched CodeGuard — an AI-powered security platform that scans your code for vulnerabilities in seconds.
 
 ✅ Detects SQL Injection, XSS, RCE & 20+ vulnerability types
 🤖 AI-generated fixes with one-click GitHub Pull Requests
@@ -26,7 +26,7 @@ Built for developers who take security seriously. 🛡️
 
 👉 https://cyber-security-code-scan.base44.app
 
-#CyberSecurity #DevSecOps #AppSec #AI #CodeSecurity #Vulnerability #SecureCode #Developer`;
+#CodeGuard #CyberSecurity #DevSecOps #AppSec #AI #CodeSecurity #Vulnerability #SecureCode #Developer`;
 
   const postRes = await fetch('https://api.linkedin.com/v2/ugcPosts', {
     method: 'POST',
