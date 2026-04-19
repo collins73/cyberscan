@@ -9,6 +9,7 @@ import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import PageNotFound from './lib/PageNotFound';
 import ThreatIntel from './pages/ThreatIntel';
 import RedTeam from './pages/RedTeam';
+import PolicyEngine from './pages/PolicyEngine';
 import { AuthProvider, useAuth } from '@/lib/AuthContext';
 import UserNotRegisteredError from '@/components/UserNotRegisteredError';
 
@@ -64,6 +65,7 @@ const AuthenticatedApp = () => {
       ))}
       <Route path="/ThreatIntel" element={<LayoutWrapper currentPageName="ThreatIntel"><ThreatIntel /></LayoutWrapper>} />
       <Route path="/RedTeam" element={<LayoutWrapper currentPageName="RedTeam"><RedTeam /></LayoutWrapper>} />
+      <Route path="/PolicyEngine" element={<LayoutWrapper currentPageName="PolicyEngine"><PolicyEngine /></LayoutWrapper>} />
       <Route path="*" element={<PageNotFound />} />
     </Routes>
   );

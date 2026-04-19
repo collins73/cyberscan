@@ -1,0 +1,72 @@
+{
+  "name": "PolicyEvaluation",
+  "type": "object",
+  "properties": {
+    "policy_id": {
+      "type": "string"
+    },
+    "policy_name": {
+      "type": "string"
+    },
+    "framework": {
+      "type": "string"
+    },
+    "scan_id": {
+      "type": "string"
+    },
+    "app_name": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pass",
+        "fail",
+        "warning"
+      ],
+      "default": "pass"
+    },
+    "violations": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "rule_id": {
+            "type": "string"
+          },
+          "rule_name": {
+            "type": "string"
+          },
+          "severity": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          },
+          "actual_value": {
+            "type": "string"
+          },
+          "threshold_value": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "passed_rules": {
+      "type": "number",
+      "default": 0
+    },
+    "failed_rules": {
+      "type": "number",
+      "default": 0
+    },
+    "compliance_score": {
+      "type": "number",
+      "description": "0-100"
+    }
+  },
+  "required": [
+    "policy_id",
+    "policy_name"
+  ]
+}

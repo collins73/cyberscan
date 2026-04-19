@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { base44 } from '@/api/base44Client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { motion } from 'framer-motion';
-import { Shield, Loader2, ArrowLeft, BarChart3, Activity, Globe, Crosshair } from 'lucide-react';
+import { Shield, Loader2, ArrowLeft, BarChart3, Activity, Globe, Crosshair, Settings } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useNavigate } from 'react-router-dom';
@@ -343,6 +343,14 @@ Be specific and cite actual CVE numbers, CISA advisories, or NIST NVD data when 
                 >
                   <Crosshair className="w-4 h-4 mr-2" />
                   Red Team
+                </Button>
+                <Button
+                  variant="outline"
+                  onClick={() => navigate('/PolicyEngine')}
+                  className="border-indigo-500/30 text-indigo-400 hover:bg-indigo-500/10"
+                >
+                  <Settings className="w-4 h-4 mr-2" />
+                  Policies
                 </Button>
                 {view === 'results' && (
                   <Button
