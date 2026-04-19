@@ -1,7 +1,7 @@
 import React from 'react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { X, Plus, BarChart3, TrendingUp, Shield, FileText, Target, PieChart } from "lucide-react";
+import { X, Plus, BarChart3, TrendingUp, Shield, FileText, Target, PieChart, Flame } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
 export default function WidgetSelector({ activeWidgets, onToggleWidget, onClose }) {
@@ -13,7 +13,8 @@ export default function WidgetSelector({ activeWidgets, onToggleWidget, onClose 
     { id: 'language', name: 'Language Breakdown', icon: FileText, description: 'By programming language' },
     { id: 'comparison', name: 'File Comparison', icon: BarChart3, description: 'Compare security scores' },
     { id: 'threatIntel', name: 'Threat Intelligence', icon: Shield, description: 'CVE and threat data' },
-    { id: 'scoreHistory', name: 'Score History', icon: TrendingUp, description: 'Score trends' }
+    { id: 'scoreHistory', name: 'Score History', icon: TrendingUp, description: 'Score trends' },
+    { id: 'heatmap', name: 'Vulnerability Heatmap', icon: Flame, description: 'Hot zones by file density' }
   ];
 
   return (

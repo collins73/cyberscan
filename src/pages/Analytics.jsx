@@ -18,13 +18,14 @@ import TimeRangeFilter from '../components/dashboard/TimeRangeFilter';
 import WidgetSelector from '../components/dashboard/WidgetSelector';
 import ComprehensiveReport from '../components/dashboard/ComprehensiveReport';
 import OptimizationRecommendations from '../components/system/OptimizationRecommendations';
+import VulnerabilityHeatmap from '../components/analytics/VulnerabilityHeatmap';
 
 export default function Analytics() {
   const navigate = useNavigate();
   const [timeRange, setTimeRange] = useState(30);
   const [showWidgetSelector, setShowWidgetSelector] = useState(false);
   const [activeWidgets, setActiveWidgets] = useState([
-    'metrics', 'trends', 'severity', 'topVulns', 'language', 'comparison', 'threatIntel', 'scoreHistory'
+    'metrics', 'trends', 'severity', 'topVulns', 'language', 'comparison', 'threatIntel', 'scoreHistory', 'heatmap'
   ]);
 
   const { data: allScans = [], isLoading: scansLoading } = useQuery({
@@ -271,6 +272,20 @@ export default function Analytics() {
                   </motion.div>
                 )}
               </div>
+
+              {/* Vulnerability Heatmap - Full Width */}
+              {activeWidgets.includes('heatmap') && (
+                <motion.div
+                  layout
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -20 }}
+                >
+                  <DashboardWidget title="Vulnerability Density Heatmap">
+                    <VulnerabilityHeatmap scans={scans} />
+                  </DashboardWidget>
+                </motion.div>
+              )}
 
               {/* Full Width Widgets */}
               {activeWidgets.includes('topVulns') && (
