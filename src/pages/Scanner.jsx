@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { base44 } from '@/api/base44Client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Shield, Loader2, ArrowLeft, BarChart3, Activity, Globe, Crosshair, Settings, Bell, Calendar } from 'lucide-react';
+import { Shield, Loader2, ArrowLeft, BarChart3, Activity, Globe, Crosshair, Settings, Bell, Calendar, GitPullRequest } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useNavigate } from 'react-router-dom';
@@ -308,6 +308,9 @@ Be specific and cite actual CVE numbers, CISA advisories, or NIST NVD data when 
                 </Button>
                 <Button variant="outline" onClick={() => setShowSchedule(true)} className="border-cyan-500/30 text-cyan-400 hover:bg-cyan-500/10">
                   <Calendar className="w-4 h-4 mr-2" /> Schedule
+                </Button>
+                <Button variant="outline" onClick={() => navigate('/PRIntegration')} className="border-violet-500/30 text-violet-400 hover:bg-violet-500/10">
+                  <GitPullRequest className="w-4 h-4 mr-2" /> PR Scan
                 </Button>
                 <Button variant="outline" onClick={() => navigate('/Alerts')} className="border-rose-500/30 text-rose-400 hover:bg-rose-500/10 relative">
                   <Bell className="w-4 h-4 mr-2" /> Alerts

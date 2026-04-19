@@ -1,0 +1,24 @@
+{
+  "name": "PRScanConfig",
+  "type": "object",
+  "properties": {
+    "repo_full_name": {
+      "type": "string",
+      "description": "GitHub repo in owner/repo format, e.g. acme/my-app"
+    },
+    "enabled": {
+      "type": "boolean",
+      "default": true
+    },
+    "last_checked": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "notes": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "repo_full_name"
+  ]
+}
