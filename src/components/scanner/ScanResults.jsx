@@ -1,13 +1,16 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { motion } from "framer-motion";
-import { Shield, AlertTriangle, CheckCircle, Clock, Download } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { motion, AnimatePresence } from "framer-motion";
+import { Shield, AlertTriangle, CheckCircle, Clock, Download, GitPullRequest } from "lucide-react";
 import VulnerabilityCard from './VulnerabilityCard';
 import ReportGenerator from '../reports/ReportGenerator';
+import AutoFixModal from './AutoFixModal';
 
 export default function ScanResults({ scanData }) {
   const { vulnerabilities, overall_score, file_name, scan_duration, code_snippet } = scanData;
+  const [showAutoFix, setShowAutoFix] = useState(false);
 
   const criticalCount = vulnerabilities?.filter(v => v.severity === 'critical').length || 0;
   const highCount = vulnerabilities?.filter(v => v.severity === 'high').length || 0;
@@ -104,21 +107,46 @@ export default function ScanResults({ scanData }) {
         </CardContent>
       </Card>
 
-      {/* Export Reports Section */}
-      <Card className="bg-slate-900/50 border-slate-800">
-        <CardContent className="p-6">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <Download className="w-5 h-5 text-cyan-400" />
-              <div>
-                <h3 className="text-white font-semibold">Export Report</h3>
-                <p className="text-slate-400 text-sm">Download detailed security analysis</p>
+      {/* Auto-Fix + Export Row */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {vulnerabilities?.length > 0 && (
+          <Card className="bg-slate-900/50 border-green-500/20">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <GitPullRequest className="w-5 h-5 text-green-400" />
+                  <div>
+                    <h3 className="text-white font-semibold">Auto-Fix via GitHub</h3>
+                    <p className="text-slate-400 text-sm">LLM patches code &amp; opens a PR</p>
+                  </div>
+                </div>
+                <Button
+                  onClick={() => setShowAutoFix(true)}
+                  className="bg-gradient-to-r from-green-600 to-emerald-500 hover:from-green-700 hover:to-emerald-600 text-white font-semibold"
+                >
+                  <GitPullRequest className="w-4 h-4 mr-2" />
+                  Auto-Fix
+                </Button>
               </div>
+            </CardContent>
+          </Card>
+        )}
+
+        <Card className="bg-slate-900/50 border-slate-800">
+          <CardContent className="p-6">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <Download className="w-5 h-5 text-cyan-400" />
+                <div>
+                  <h3 className="text-white font-semibold">Export Report</h3>
+                  <p className="text-slate-400 text-sm">Download detailed security analysis</p>
+                </div>
+              </div>
+              <ReportGenerator scanData={scanData} />
             </div>
-            <ReportGenerator scanData={scanData} />
-          </div>
-        </CardContent>
-      </Card>
+          </CardContent>
+        </Card>
+      </div>
 
       {/* Vulnerabilities List */}
       {vulnerabilities && vulnerabilities.length > 0 ? (
@@ -145,6 +173,11 @@ export default function ScanResults({ scanData }) {
           </CardContent>
         </Card>
       )}
+      <AnimatePresence>
+        {showAutoFix && (
+          <AutoFixModal scanData={scanData} onClose={() => setShowAutoFix(false)} />
+        )}
+      </AnimatePresence>
     </motion.div>
   );
 }
