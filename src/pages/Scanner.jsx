@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { base44 } from '@/api/base44Client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Shield, Loader2, ArrowLeft, BarChart3, Activity, Globe, Crosshair, Settings, Bell, Calendar, GitPullRequest } from 'lucide-react';
+import { Shield, Loader2, ArrowLeft, BarChart3, Activity, Globe, Crosshair, Settings, Bell, Calendar, GitPullRequest, FolderOpen } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useNavigate } from 'react-router-dom';
@@ -48,7 +48,7 @@ export default function Scanner() {
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['vulnerabilityMetrics'] })
   });
 
-  const handleScanStart = async ({ code, fileName }) => {
+  const handleScanStart = async ({ code, fileName, projectId, projectName }) => {
     setIsScanning(true);
     const startTime = Date.now();
     try {
@@ -127,7 +127,9 @@ Also provide an overall security score from 0-100 (100 being most secure).`,
         code_snippet: code.substring(0, 500),
         vulnerabilities: response.vulnerabilities || [],
         overall_score: response.overall_score || 0,
-        scan_duration: parseFloat(scanDuration)
+        scan_duration: parseFloat(scanDuration),
+        project_id: projectId || null,
+        project_name: projectName || null
       };
 
       const savedScan = await createScanMutation.mutateAsync(scanData);
@@ -311,6 +313,9 @@ Be specific and cite actual CVE numbers, CISA advisories, or NIST NVD data when 
                 </Button>
                 <Button variant="outline" onClick={() => navigate('/PRIntegration')} className="border-violet-500/30 text-violet-400 hover:bg-violet-500/10">
                   <GitPullRequest className="w-4 h-4 mr-2" /> PR Scan
+                </Button>
+                <Button variant="outline" onClick={() => navigate('/Projects')} className="border-violet-500/30 text-violet-400 hover:bg-violet-500/10">
+                  <FolderOpen className="w-4 h-4 mr-2" /> Projects
                 </Button>
                 <Button variant="outline" onClick={() => navigate('/Alerts')} className="border-rose-500/30 text-rose-400 hover:bg-rose-500/10 relative">
                   <Bell className="w-4 h-4 mr-2" /> Alerts

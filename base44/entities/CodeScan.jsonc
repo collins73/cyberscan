@@ -1,0 +1,71 @@
+{
+  "name": "CodeScan",
+  "type": "object",
+  "properties": {
+    "project_id": {
+      "type": "string",
+      "description": "Reference to the Project entity"
+    },
+    "project_name": {
+      "type": "string",
+      "description": "Denormalized project name for quick display"
+    },
+    "file_name": {
+      "type": "string",
+      "description": "Name of the scanned file or 'Manual Input'"
+    },
+    "language": {
+      "type": "string",
+      "description": "Programming language detected"
+    },
+    "code_snippet": {
+      "type": "string",
+      "description": "Preview of the scanned code"
+    },
+    "vulnerabilities": {
+      "type": "array",
+      "description": "List of detected vulnerabilities",
+      "items": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string"
+          },
+          "severity": {
+            "type": "string",
+            "enum": [
+              "critical",
+              "high",
+              "medium",
+              "low"
+            ]
+          },
+          "description": {
+            "type": "string"
+          },
+          "line_number": {
+            "type": "string"
+          },
+          "code_example": {
+            "type": "string"
+          },
+          "recommendation": {
+            "type": "string"
+          },
+          "secure_code_example": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "overall_score": {
+      "type": "number",
+      "description": "Security score from 0-100"
+    },
+    "scan_duration": {
+      "type": "number",
+      "description": "Duration of scan in seconds"
+    }
+  },
+  "required": []
+}

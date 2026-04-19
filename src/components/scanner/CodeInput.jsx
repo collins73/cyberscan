@@ -1,14 +1,22 @@
 import React, { useState } from 'react';
+import { base44 } from '@/api/base44Client';
+import { useQuery } from '@tanstack/react-query';
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { Upload, Code, Scan } from "lucide-react";
+import { Upload, Code, Scan, FolderOpen } from "lucide-react";
 import { motion } from "framer-motion";
 
 export default function CodeInput({ onScanStart }) {
   const [code, setCode] = useState('');
   const [file, setFile] = useState(null);
   const [inputMode, setInputMode] = useState('paste'); // 'paste' or 'upload'
+  const [selectedProjectId, setSelectedProjectId] = useState('');
+
+  const { data: projects = [] } = useQuery({
+    queryKey: ['projects'],
+    queryFn: () => base44.entities.Project.list('-created_date', 100)
+  });
 
   const handleFileChange = (e) => {
     const selectedFile = e.target.files[0];
@@ -24,9 +32,12 @@ export default function CodeInput({ onScanStart }) {
 
   const handleScan = () => {
     if (code.trim()) {
+      const selectedProject = projects.find(p => p.id === selectedProjectId);
       onScanStart({
         code,
-        fileName: file ? file.name : 'Manual Input'
+        fileName: file ? file.name : 'Manual Input',
+        projectId: selectedProjectId || null,
+        projectName: selectedProject?.name || null
       });
     }
   };
@@ -97,6 +108,24 @@ export default function CodeInput({ onScanStart }) {
             </label>
           </motion.div>
         )}
+
+        {/* Project Selector */}
+        <div className="mt-4">
+          <div className="flex items-center gap-2 mb-1.5">
+            <FolderOpen className="w-3.5 h-3.5 text-violet-400" />
+            <label className="text-slate-400 text-xs uppercase">Assign to Project (optional)</label>
+          </div>
+          <select
+            value={selectedProjectId}
+            onChange={e => setSelectedProjectId(e.target.value)}
+            className="w-full bg-slate-950 border border-slate-700 text-slate-300 rounded-md px-3 py-2 text-sm focus:border-violet-500 focus:outline-none"
+          >
+            <option value="">— No project —</option>
+            {projects.map(p => (
+              <option key={p.id} value={p.id}>{p.name}</option>
+            ))}
+          </select>
+        </div>
 
         {/* Scan Button */}
         <div className="mt-6 flex justify-end">

@@ -1,0 +1,29 @@
+{
+  "name": "Project",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Project or repository name"
+    },
+    "description": {
+      "type": "string",
+      "description": "Short description of the project"
+    },
+    "repository_url": {
+      "type": "string",
+      "description": "GitHub or other repo URL"
+    },
+    "language": {
+      "type": "string",
+      "description": "Primary programming language"
+    },
+    "color": {
+      "type": "string",
+      "description": "Accent color for the project badge (hex or tailwind name)"
+    }
+  },
+  "required": [
+    "name"
+  ]
+}
