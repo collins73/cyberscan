@@ -48,12 +48,14 @@ export default function Scanner() {
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['vulnerabilityMetrics'] })
   });
 
-  const handleScanStart = async ({ code, fileName, projectId, projectName }) => {
+  const handleScanStart = async ({ code, fileName, projectId, projectName, model }) => {
     setIsScanning(true);
     const startTime = Date.now();
     try {
       const language = detectLanguage(fileName, code);
+      const llmParams = model ? { model } : {};
       const response = await base44.integrations.Core.InvokeLLM({
+        ...llmParams,
         prompt: `You are an expert cybersecurity code analyst. Analyze the following code for security vulnerabilities.
 
 Code to analyze:
@@ -136,7 +138,8 @@ Also provide an overall security score from 0-100 (100 being most secure).`,
 
       const enrichedVulnerabilities = await enrichVulnerabilitiesWithThreatIntel(
         response.vulnerabilities || [],
-        language
+        language,
+        llmParams
       );
 
       scanData.vulnerabilities = enrichedVulnerabilities;
@@ -189,10 +192,12 @@ Also provide an overall security score from 0-100 (100 being most secure).`,
     }
   };
 
-  const enrichVulnerabilitiesWithThreatIntel = async (vulnerabilities, language) => {
+  const enrichVulnerabilitiesWithThreatIntel = async (vulnerabilities, language, llmParams = {}) => {
     const enrichmentPromises = vulnerabilities.map(async (vuln) => {
       try {
         const threatIntel = await base44.integrations.Core.InvokeLLM({
+          ...llmParams,
+          add_context_from_internet: true,
           prompt: `You are a cybersecurity threat intelligence analyst. Research the following vulnerability type and provide comprehensive threat intelligence.
 
 Vulnerability: ${vuln.title}
@@ -209,7 +214,6 @@ Search for and provide:
 6. Mitigation priority recommendations
 
 Be specific and cite actual CVE numbers, CISA advisories, or NIST NVD data when available.`,
-          add_context_from_internet: true,
           response_json_schema: {
             type: "object",
             properties: {

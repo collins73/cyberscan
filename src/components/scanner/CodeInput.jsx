@@ -4,14 +4,22 @@ import { useQuery } from '@tanstack/react-query';
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { Upload, Code, Scan, FolderOpen } from "lucide-react";
+import { Upload, Code, Scan, FolderOpen, Bot } from "lucide-react";
 import { motion } from "framer-motion";
+
+const MODELS = [
+  { value: 'automatic', label: 'Auto (Default)', description: 'GPT-4o-mini' },
+  { value: 'claude_sonnet_4_6', label: 'Claude Sonnet', description: 'High quality · more credits' },
+  { value: 'claude_opus_4_6', label: 'Claude Opus', description: 'Highest quality · most credits' },
+  { value: 'gpt_5', label: 'GPT-5', description: 'High quality · more credits' },
+];
 
 export default function CodeInput({ onScanStart }) {
   const [code, setCode] = useState('');
   const [file, setFile] = useState(null);
   const [inputMode, setInputMode] = useState('paste'); // 'paste' or 'upload'
   const [selectedProjectId, setSelectedProjectId] = useState('');
+  const [selectedModel, setSelectedModel] = useState('automatic');
 
   const { data: projects = [] } = useQuery({
     queryKey: ['projects'],
@@ -37,7 +45,8 @@ export default function CodeInput({ onScanStart }) {
         code,
         fileName: file ? file.name : 'Manual Input',
         projectId: selectedProjectId || null,
-        projectName: selectedProject?.name || null
+        projectName: selectedProject?.name || null,
+        model: selectedModel === 'automatic' ? null : selectedModel
       });
     }
   };
@@ -125,6 +134,31 @@ export default function CodeInput({ onScanStart }) {
               <option key={p.id} value={p.id}>{p.name}</option>
             ))}
           </select>
+        </div>
+
+        {/* Model Selector */}
+        <div className="mt-4">
+          <div className="flex items-center gap-2 mb-1.5">
+            <Bot className="w-3.5 h-3.5 text-orange-400" />
+            <label className="text-slate-400 text-xs uppercase">AI Model</label>
+          </div>
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+            {MODELS.map(m => (
+              <button
+                key={m.value}
+                type="button"
+                onClick={() => setSelectedModel(m.value)}
+                className={`px-3 py-2 rounded-lg border text-left transition-all ${
+                  selectedModel === m.value
+                    ? 'border-orange-500/60 bg-orange-500/10 text-orange-300'
+                    : 'border-slate-700 text-slate-400 hover:border-slate-600'
+                }`}
+              >
+                <p className="text-xs font-semibold leading-tight">{m.label}</p>
+                <p className="text-xs text-slate-500 mt-0.5 leading-tight">{m.description}</p>
+              </button>
+            ))}
+          </div>
         </div>
 
         {/* Scan Button */}
