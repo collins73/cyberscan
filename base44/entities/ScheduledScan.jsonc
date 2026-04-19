@@ -4,7 +4,7 @@
   "properties": {
     "name": {
       "type": "string",
-      "description": "Name of the scheduled scan task"
+      "description": "Friendly name for this scheduled scan"
     },
     "target": {
       "type": "string",
@@ -15,80 +15,71 @@
       "enum": [
         "repository",
         "url",
-        "code_snippet"
+        "file_pattern"
       ],
-      "default": "repository",
-      "description": "Type of scan target"
+      "default": "repository"
     },
     "frequency": {
       "type": "string",
       "enum": [
+        "hourly",
         "daily",
         "weekly",
         "monthly"
       ],
-      "default": "weekly",
-      "description": "How often to run the scan"
+      "default": "daily"
     },
     "day_of_week": {
       "type": "string",
-      "description": "For weekly scans: day to run (monday-sunday)"
+      "description": "For weekly scans: monday, tuesday, etc."
     },
     "time_of_day": {
       "type": "string",
-      "description": "Time to run the scan (HH:MM)"
-    },
-    "notify_on_new_vulns": {
-      "type": "boolean",
-      "default": true,
-      "description": "Alert when new vulnerabilities are detected"
-    },
-    "notify_on_score_drop": {
-      "type": "boolean",
-      "default": true,
-      "description": "Alert when security score drops"
-    },
-    "min_severity_to_alert": {
-      "type": "string",
-      "enum": [
-        "critical",
-        "high",
-        "medium",
-        "low"
-      ],
-      "default": "high",
-      "description": "Minimum severity level to trigger alert"
+      "description": "Time in HH:MM format"
     },
     "enabled": {
       "type": "boolean",
       "default": true
     },
+    "notify_on_critical": {
+      "type": "boolean",
+      "default": true
+    },
+    "notify_on_high": {
+      "type": "boolean",
+      "default": true
+    },
+    "notify_on_any": {
+      "type": "boolean",
+      "default": false
+    },
     "last_run": {
       "type": "string",
-      "format": "date-time",
-      "description": "Last time this scan ran"
+      "format": "date-time"
     },
     "next_run": {
       "type": "string",
-      "format": "date-time",
-      "description": "Next scheduled run time"
+      "format": "date-time"
     },
-    "last_score": {
-      "type": "number",
-      "description": "Security score from last scan"
+    "last_scan_id": {
+      "type": "string"
     },
     "last_vuln_count": {
       "type": "number",
-      "description": "Vulnerability count from last scan"
+      "default": 0
     },
-    "run_count": {
+    "last_score": {
+      "type": "number"
+    },
+    "total_runs": {
       "type": "number",
-      "default": 0,
-      "description": "Total times this scan has run"
+      "default": 0
     },
-    "notify_email": {
-      "type": "string",
-      "description": "Email address for notifications"
+    "language": {
+      "type": "string"
+    },
+    "notes": {
+      "type": "string"
     }
   },
   "required": [
