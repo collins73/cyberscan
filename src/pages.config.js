@@ -14,6 +14,6 @@ export const PAGES = {
 }
 
 export const pagesConfig = {
-    mainPage: "Scanner",
+    mainPage: null,
     Pages: PAGES,
 };
