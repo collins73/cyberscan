@@ -13,6 +13,7 @@ import PolicyEngine from './pages/PolicyEngine';
 import AlertsDashboard from './pages/AlertsDashboard';
 import PRIntegration from './pages/PRIntegration';
 import Projects from './pages/Projects';
+import Landing from './pages/Landing';
 import { AuthProvider, useAuth } from '@/lib/AuthContext';
 import UserNotRegisteredError from '@/components/UserNotRegisteredError';
 
@@ -72,6 +73,7 @@ const AuthenticatedApp = () => {
       <Route path="/Alerts" element={<LayoutWrapper currentPageName="Alerts"><AlertsDashboard /></LayoutWrapper>} />
       <Route path="/PRIntegration" element={<LayoutWrapper currentPageName="PRIntegration"><PRIntegration /></LayoutWrapper>} />
       <Route path="/Projects" element={<LayoutWrapper currentPageName="Projects"><Projects /></LayoutWrapper>} />
+      <Route path="/Landing" element={<Landing />} />
       <Route path="*" element={<PageNotFound />} />
     </Routes>
   );
