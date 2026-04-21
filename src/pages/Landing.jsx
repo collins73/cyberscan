@@ -346,6 +346,7 @@ export default function Landing() {
             <span className="text-slate-400 font-semibold">CodeGuard</span>
           </div>
           <p>AI-Powered Security Analysis Platform</p>
+          <p className="mt-2">© {new Date().getFullYear()} Demayne Collins. All rights reserved.</p>
         </footer>
       </div>
     </div>
