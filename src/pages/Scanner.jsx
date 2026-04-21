@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { base44 } from '@/api/base44Client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Shield, Loader2, ArrowLeft, BarChart3, Activity, Globe, Crosshair, Settings, Bell, Calendar, GitPullRequest, FolderOpen } from 'lucide-react';
+import { Shield, Loader2, ArrowLeft, BarChart3, Activity, Globe, Crosshair, Settings, Bell, Calendar, GitPullRequest, FolderOpen, Home } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useNavigate } from 'react-router-dom';
@@ -297,6 +297,9 @@ Be specific and cite actual CVE numbers, CISA advisories, or NIST NVD data when 
               </div>
 
               <div className="flex gap-2 flex-wrap">
+                <Button variant="outline" onClick={() => navigate('/')} className="border-cyan-500/30 text-cyan-400 hover:bg-cyan-500/10">
+                  <Home className="w-4 h-4 mr-2" /> Home
+                </Button>
                 <Button variant="outline" onClick={() => navigate('/Analytics')} className="border-cyan-500/30 text-cyan-400 hover:bg-cyan-500/10">
                   <BarChart3 className="w-4 h-4 mr-2" /> Analytics
                 </Button>
