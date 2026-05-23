@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { base44 } from '@/api/base44Client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Shield, Loader2, ArrowLeft, BarChart3, Activity, Globe, Crosshair, Settings, Bell, Calendar, GitPullRequest, FolderOpen, Home } from 'lucide-react';
+import { Shield, Loader2, ArrowLeft, BarChart3, Activity, Globe, Home } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useNavigate } from 'react-router-dom';
@@ -10,14 +10,13 @@ import { getAppVersion } from '../components/AppVersion';
 import CodeInput from '../components/scanner/CodeInput';
 import ScanResults from '../components/scanner/ScanResults';
 import ScanHistory from '../components/scanner/ScanHistory';
-import ScheduleModal from '../components/scanner/ScheduleModal';
 
 export default function Scanner() {
   const navigate = useNavigate();
   const [isScanning, setIsScanning] = useState(false);
   const [currentScan, setCurrentScan] = useState(null);
   const [view, setView] = useState('input');
-  const [showSchedule, setShowSchedule] = useState(false);
+
   const queryClient = useQueryClient();
 
   const { data: scans = [] } = useQuery({
@@ -303,34 +302,11 @@ Be specific and cite actual CVE numbers, CISA advisories, or NIST NVD data when 
                 <Button variant="outline" onClick={() => navigate('/Analytics')} className="border-cyan-500/30 text-cyan-400 hover:bg-cyan-500/10">
                   <BarChart3 className="w-4 h-4 mr-2" /> Analytics
                 </Button>
-                <Button variant="outline" onClick={() => navigate('/Monitoring')} className="border-cyan-500/30 text-cyan-400 hover:bg-cyan-500/10">
-                  <Activity className="w-4 h-4 mr-2" /> Monitoring
-                </Button>
                 <Button variant="outline" onClick={() => navigate('/ThreatIntel')} className="border-orange-500/30 text-orange-400 hover:bg-orange-500/10">
                   <Globe className="w-4 h-4 mr-2" /> Threat Intel
                 </Button>
-                <Button variant="outline" onClick={() => navigate('/RedTeam')} className="border-red-500/30 text-red-400 hover:bg-red-500/10">
-                  <Crosshair className="w-4 h-4 mr-2" /> Red Team
-                </Button>
-                <Button variant="outline" onClick={() => navigate('/PolicyEngine')} className="border-indigo-500/30 text-indigo-400 hover:bg-indigo-500/10">
-                  <Settings className="w-4 h-4 mr-2" /> Policies
-                </Button>
-                <Button variant="outline" onClick={() => setShowSchedule(true)} className="border-cyan-500/30 text-cyan-400 hover:bg-cyan-500/10">
-                  <Calendar className="w-4 h-4 mr-2" /> Schedule
-                </Button>
-                <Button variant="outline" onClick={() => navigate('/PRIntegration')} className="border-violet-500/30 text-violet-400 hover:bg-violet-500/10">
-                  <GitPullRequest className="w-4 h-4 mr-2" /> PR Scan
-                </Button>
-                <Button variant="outline" onClick={() => navigate('/Projects')} className="border-violet-500/30 text-violet-400 hover:bg-violet-500/10">
-                  <FolderOpen className="w-4 h-4 mr-2" /> Projects
-                </Button>
-                <Button variant="outline" onClick={() => navigate('/Alerts')} className="border-rose-500/30 text-rose-400 hover:bg-rose-500/10 relative">
-                  <Bell className="w-4 h-4 mr-2" /> Alerts
-                  {activeAlertCount > 0 && (
-                    <span className="absolute -top-1.5 -right-1.5 w-4 h-4 bg-red-500 text-white text-xs rounded-full flex items-center justify-center font-bold">
-                      {activeAlertCount > 9 ? '9+' : activeAlertCount}
-                    </span>
-                  )}
+                <Button variant="outline" onClick={() => navigate('/Monitoring')} className="border-cyan-500/30 text-cyan-400 hover:bg-cyan-500/10">
+                  <Activity className="w-4 h-4 mr-2" /> Monitoring
                 </Button>
                 {view === 'results' && (
                   <Button onClick={handleBackToInput} variant="outline" className="border-cyan-500/30 text-cyan-400 hover:bg-cyan-500/10">
@@ -375,9 +351,7 @@ Be specific and cite actual CVE numbers, CISA advisories, or NIST NVD data when 
         </div>
       </div>
 
-      <AnimatePresence>
-        {showSchedule && <ScheduleModal onClose={() => setShowSchedule(false)} />}
-      </AnimatePresence>
+
     </div>
   );
 }
