@@ -3,8 +3,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import {
   Shield, Code, GitPullRequest, BarChart3, Bell, Settings,
-  Globe, Crosshair, ChevronRight, Play, CheckCircle, ArrowRight,
-  Zap, Lock, Activity, FolderOpen, Calendar
+  ChevronRight, Play, CheckCircle, ArrowRight,
+  Zap, Lock
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
@@ -93,16 +93,10 @@ const STEPS = [
 ];
 
 const FEATURES = [
-  { icon: Shield, label: 'AI Code Scanner', desc: 'Detect 20+ vuln types instantly', path: '/Scanner', color: 'cyan' },
-  { icon: BarChart3, label: 'Analytics', desc: 'Track security trends over time', path: '/Analytics', color: 'blue' },
-  { icon: Activity, label: 'Monitoring', desc: 'Real-time deployment health', path: '/Monitoring', color: 'green' },
-  { icon: Globe, label: 'Threat Intel', desc: 'CVE correlation & threat feeds', path: '/ThreatIntel', color: 'orange' },
-  { icon: Crosshair, label: 'Red Team', desc: 'Exploit simulation & PoC', path: '/RedTeam', color: 'red' },
-  { icon: Settings, label: 'Policy Engine', desc: 'OWASP, PCI DSS, HIPAA compliance', path: '/PolicyEngine', color: 'indigo' },
-  { icon: GitPullRequest, label: 'PR Scanning', desc: 'Auto-scan pull requests', path: '/PRIntegration', color: 'violet' },
-  { icon: Bell, label: 'Alerts', desc: 'Critical vulnerability alerts', path: '/Alerts', color: 'rose' },
-  { icon: FolderOpen, label: 'Projects', desc: 'Organize repos & track progress', path: '/Projects', color: 'amber' },
-  { icon: Calendar, label: 'Scheduled Scans', desc: 'Automate recurring security checks', path: '/Scanner', color: 'teal' },
+  { icon: Shield, label: 'AI Code Scanner', desc: 'Detect 20+ vulnerability types instantly', path: '/Scanner', color: 'cyan' },
+  { icon: GitPullRequest, label: 'Auto-Fix PRs', desc: 'One-click AI-patched pull requests', path: '/PRIntegration', color: 'green' },
+  { icon: BarChart3, label: 'Analytics', desc: 'Track your security posture over time', path: '/Analytics', color: 'blue' },
+  { icon: Bell, label: 'Alerts', desc: 'Instant critical vulnerability alerts', path: '/Alerts', color: 'rose' },
 ];
 
 const colorMap = {
@@ -286,10 +280,10 @@ export default function Landing() {
         {/* Features Grid */}
         <section className="max-w-6xl mx-auto px-6 py-20">
           <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold mb-3">Everything You Need</h2>
-            <p className="text-slate-400">A complete security platform for modern development teams</p>
+            <h2 className="text-3xl md:text-4xl font-bold mb-3">Core Features</h2>
+            <p className="text-slate-400">Everything you need to keep your code secure</p>
           </div>
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {FEATURES.map((feature) => {
               const Icon = feature.icon;
               const cls = colorMap[feature.color];
@@ -298,11 +292,11 @@ export default function Landing() {
                   key={feature.label}
                   whileHover={{ scale: 1.04 }}
                   onClick={() => navigate(feature.path)}
-                  className={`border rounded-xl p-4 cursor-pointer transition-all hover:shadow-lg bg-slate-900/50 ${cls}`}
+                  className={`border rounded-xl p-6 cursor-pointer transition-all hover:shadow-lg bg-slate-900/50 ${cls}`}
                 >
-                  <Icon className="w-6 h-6 mb-3" />
-                  <p className="font-semibold text-sm text-white">{feature.label}</p>
-                  <p className="text-slate-500 text-xs mt-1">{feature.desc}</p>
+                  <Icon className="w-7 h-7 mb-4" />
+                  <p className="font-semibold text-base text-white">{feature.label}</p>
+                  <p className="text-slate-500 text-sm mt-1">{feature.desc}</p>
                 </motion.div>
               );
             })}
