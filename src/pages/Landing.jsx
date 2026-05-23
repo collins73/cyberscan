@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import {
-  Shield, Code, GitPullRequest, BarChart3, Bell, Settings,
+  Shield, Code, GitPullRequest, BarChart3, Activity, Globe,
   ChevronRight, Play, CheckCircle, ArrowRight,
   Zap, Lock
 } from 'lucide-react';
@@ -93,10 +93,10 @@ const STEPS = [
 ];
 
 const FEATURES = [
-  { icon: Shield, label: 'AI Code Scanner', desc: 'Detect 20+ vulnerability types instantly', path: '/Scanner', color: 'cyan' },
-  { icon: GitPullRequest, label: 'Auto-Fix PRs', desc: 'One-click AI-patched pull requests', path: '/PRIntegration', color: 'green' },
   { icon: BarChart3, label: 'Analytics', desc: 'Track your security posture over time', path: '/Analytics', color: 'blue' },
-  { icon: Bell, label: 'Alerts', desc: 'Instant critical vulnerability alerts', path: '/Alerts', color: 'rose' },
+  { icon: Globe, label: 'Threat Intel', desc: 'Real-time CVE correlation & threat data', path: '/ThreatIntel', color: 'orange' },
+  { icon: Activity, label: 'Monitoring', desc: 'Monitor deployed apps in real-time', path: '/Monitoring', color: 'cyan' },
+  { icon: Shield, label: 'AI Scanner', desc: 'Detect 20+ vulnerability types instantly', path: '/Scanner', color: 'indigo' },
 ];
 
 const colorMap = {
@@ -142,7 +142,7 @@ export default function Landing() {
               onClick={() => navigate('/Scanner')}
               className="bg-gradient-to-r from-cyan-500 to-blue-500 text-black font-bold hover:opacity-90"
             >
-              Launch App <ArrowRight className="w-4 h-4 ml-1" />
+              Enter Dashboard <ArrowRight className="w-4 h-4 ml-1" />
             </Button>
           </div>
         </nav>
@@ -317,7 +317,7 @@ export default function Landing() {
               Start scanning in seconds. No setup required — just paste your code and let CodeGuard do the rest.
             </p>
             <Button
-              onClick={() => navigate('/Scanner')}
+              onClick={() => navigate('/Analytics')}
               size="lg"
               className="bg-gradient-to-r from-cyan-500 to-blue-500 text-black font-bold text-lg px-10 hover:opacity-90"
             >

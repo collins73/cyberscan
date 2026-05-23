@@ -2,9 +2,9 @@ import React, { useState } from 'react';
 import { base44 } from '@/api/base44Client';
 import { useQuery } from '@tanstack/react-query';
 import { motion, AnimatePresence } from 'framer-motion';
-import { BarChart3, Shield, Loader2, Settings, Layout as LayoutIcon, Globe } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { BarChart3, Loader2, Layout as LayoutIcon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import AppNav from '../components/AppNav';
 import MetricsOverview from '../components/analytics/MetricsOverview';
 import VulnerabilityTrends from '../components/analytics/VulnerabilityTrends';
 import SeverityDistribution from '../components/analytics/SeverityDistribution';
@@ -21,7 +21,6 @@ import OptimizationRecommendations from '../components/system/OptimizationRecomm
 import VulnerabilityHeatmap from '../components/analytics/VulnerabilityHeatmap';
 
 export default function Analytics() {
-  const navigate = useNavigate();
   const [timeRange, setTimeRange] = useState(30);
   const [showWidgetSelector, setShowWidgetSelector] = useState(false);
   const [activeWidgets, setActiveWidgets] = useState([
@@ -86,64 +85,24 @@ export default function Analytics() {
       <div className="fixed inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PHBhdHRlcm4gaWQ9ImdyaWQiIHdpZHRoPSI2MCIgaGVpZ2h0PSI2MCIgcGF0dGVyblVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+PHBhdGggZD0iTSAxMCAwIEwgMCAwIDAgMTAiIGZpbGw9Im5vbmUiIHN0cm9rZT0icmdiYSgwLDIxNywyNTUsMC4wNSkiIHN0cm9rZS13aWR0aD0iMSIvPjwvcGF0dGVybj48L2RlZnM+PHJlY3Qgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgZmlsbD0idXJsKCNncmlkKSIvPjwvc3ZnPg==')] opacity-30" />
       
       <div className="relative z-10">
-        {/* Header */}
-        <motion.div
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="border-b border-cyan-500/20 bg-slate-950/80 backdrop-blur-xl sticky top-0 z-50"
-        >
-          <div className="max-w-7xl mx-auto px-6 py-6">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-4">
-                <div className="p-3 bg-gradient-to-br from-cyan-500 to-blue-500 rounded-xl">
-                  <BarChart3 className="w-8 h-8 text-black" />
-                </div>
-                <div>
-                  <h1 className="text-3xl font-bold text-white tracking-tight">
-                    Analytics Dashboard
-                  </h1>
-                  <p className="text-cyan-400 text-sm font-medium">
-                    Vulnerability Metrics & Insights
-                  </p>
-                </div>
-              </div>
-              
-              <div className="flex gap-3 items-center">
-                <TimeRangeFilter
-                  selectedRange={timeRange}
-                  onRangeChange={setTimeRange}
-                />
-                {scans.length > 0 && (
-                  <ComprehensiveReport scans={scans} metrics={metrics} timeRange={timeRange} />
-                )}
-                <Button
-                  variant="outline"
-                  onClick={() => setShowWidgetSelector(true)}
-                  className="border-cyan-500/30 text-cyan-400 hover:bg-cyan-500/10"
-                >
-                  <LayoutIcon className="w-4 h-4 mr-2" />
-                  Customize
-                </Button>
-                <Button
-                  variant="outline"
-                  onClick={() => navigate('/ThreatIntel')}
-                  className="border-orange-500/30 text-orange-400 hover:bg-orange-500/10"
-                >
-                  <Globe className="w-4 h-4 mr-2" />
-                  Threat Intel
-                </Button>
-                <Button
-                  variant="outline"
-                  onClick={() => navigate('/Scanner')}
-                  className="border-cyan-500/30 text-cyan-400 hover:bg-cyan-500/10"
-                >
-                  <Shield className="w-4 h-4 mr-2" />
-                  Scanner
-                </Button>
-              </div>
-            </div>
+        <AppNav />
+        {/* Sub-header toolbar */}
+        <div className="border-b border-slate-800 bg-slate-900/60 backdrop-blur-sm">
+          <div className="max-w-7xl mx-auto px-6 py-3 flex items-center gap-3">
+            <TimeRangeFilter selectedRange={timeRange} onRangeChange={setTimeRange} />
+            {scans.length > 0 && (
+              <ComprehensiveReport scans={scans} metrics={metrics} timeRange={timeRange} />
+            )}
+            <Button
+              variant="outline"
+              onClick={() => setShowWidgetSelector(true)}
+              className="border-cyan-500/30 text-cyan-400 hover:bg-cyan-500/10"
+            >
+              <LayoutIcon className="w-4 h-4 mr-2" />
+              Customize
+            </Button>
           </div>
-        </motion.div>
+        </div>
 
         {/* Main Content */}
         <div className="max-w-7xl mx-auto px-6 py-12">
@@ -159,11 +118,11 @@ export default function Analytics() {
                 Run some code scans to see analytics and metrics
               </p>
               <Button 
-                onClick={() => navigate('/Scanner')}
+                onClick={() => window.location.href = '/Analytics'}
                 className="bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600 text-black font-bold"
               >
-                <Shield className="w-5 h-5 mr-2" />
-                Start Scanning
+                <BarChart3 className="w-5 h-5 mr-2" />
+                Refresh Dashboard
               </Button>
             </motion.div>
           ) : (

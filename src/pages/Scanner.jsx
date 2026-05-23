@@ -2,17 +2,15 @@ import React, { useState } from 'react';
 import { base44 } from '@/api/base44Client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Shield, Loader2, ArrowLeft, BarChart3, Activity, Globe, Home } from 'lucide-react';
+import { Shield, Loader2, ArrowLeft } from 'lucide-react';
+import AppNav from '../components/AppNav';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { useNavigate } from 'react-router-dom';
-import { getAppVersion } from '../components/AppVersion';
+
 import CodeInput from '../components/scanner/CodeInput';
 import ScanResults from '../components/scanner/ScanResults';
 import ScanHistory from '../components/scanner/ScanHistory';
 
 export default function Scanner() {
-  const navigate = useNavigate();
   const [isScanning, setIsScanning] = useState(false);
   const [currentScan, setCurrentScan] = useState(null);
   const [view, setView] = useState('input');
@@ -24,18 +22,7 @@ export default function Scanner() {
     queryFn: () => base44.entities.CodeScan.list('-created_date', 10)
   });
 
-  const { data: deployments = [] } = useQuery({
-    queryKey: ['deployedApplications'],
-    queryFn: () => base44.entities.DeployedApplication.list('-created_date', 5)
-  });
 
-  const { data: alerts = [] } = useQuery({
-    queryKey: ['securityAlerts'],
-    queryFn: () => base44.entities.SecurityAlert.list('-created_date', 5)
-  });
-
-  const activeAlertCount = alerts.filter(a => a.status === 'active').length;
-  const dynamicVersion = getAppVersion(scans, deployments, alerts);
 
   const createScanMutation = useMutation({
     mutationFn: (scanData) => base44.entities.CodeScan.create(scanData),
@@ -274,49 +261,16 @@ Be specific and cite actual CVE numbers, CISA advisories, or NIST NVD data when 
       <div className="fixed inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PHBhdHRlcm4gaWQ9ImdyaWQiIHdpZHRoPSI2MCIgaGVpZ2h0PSI2MCIgcGF0dGVyblVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+PHBhdGggZD0iTSAxMCAwIEwgMCAwIDAgMTAiIGZpbGw9Im5vbmUiIHN0cm9rZT0icmdiYSgwLDIxNywyNTUsMC4wNSkiIHN0cm9rZS13aWR0aD0iMSIvPjwvcGF0dGVybj48L2RlZnM+PHJlY3Qgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgZmlsbD0idXJsKCNncmlkKSIvPjwvc3ZnPg==')] opacity-30" />
 
       <div className="relative z-10">
-        {/* Header */}
-        <motion.div
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="border-b border-cyan-500/20 bg-slate-950/80 backdrop-blur-xl sticky top-0 z-50"
-        >
-          <div className="max-w-7xl mx-auto px-6 py-6">
-            <div className="flex items-center justify-between flex-wrap gap-4">
-              <div className="flex items-center gap-4">
-                <div className="p-3 bg-gradient-to-br from-cyan-500 to-blue-500 rounded-xl">
-                  <Shield className="w-8 h-8 text-black" />
-                </div>
-                <div>
-                  <div className="flex items-center gap-3">
-                    <h1 className="text-3xl font-bold text-white tracking-tight">CodeGuard</h1>
-                    <Badge className="bg-cyan-500/20 text-cyan-400 border-cyan-500/30 text-xs">v{dynamicVersion}</Badge>
-                  </div>
-                  <p className="text-cyan-400 text-sm font-medium">AI-Powered Security Analysis</p>
-                </div>
-              </div>
-
-              <div className="flex gap-2 flex-wrap">
-                <Button variant="outline" onClick={() => navigate('/')} className="border-cyan-500/30 text-cyan-400 hover:bg-cyan-500/10">
-                  <Home className="w-4 h-4 mr-2" /> Home
-                </Button>
-                <Button variant="outline" onClick={() => navigate('/Analytics')} className="border-cyan-500/30 text-cyan-400 hover:bg-cyan-500/10">
-                  <BarChart3 className="w-4 h-4 mr-2" /> Analytics
-                </Button>
-                <Button variant="outline" onClick={() => navigate('/ThreatIntel')} className="border-orange-500/30 text-orange-400 hover:bg-orange-500/10">
-                  <Globe className="w-4 h-4 mr-2" /> Threat Intel
-                </Button>
-                <Button variant="outline" onClick={() => navigate('/Monitoring')} className="border-cyan-500/30 text-cyan-400 hover:bg-cyan-500/10">
-                  <Activity className="w-4 h-4 mr-2" /> Monitoring
-                </Button>
-                {view === 'results' && (
-                  <Button onClick={handleBackToInput} variant="outline" className="border-cyan-500/30 text-cyan-400 hover:bg-cyan-500/10">
-                    <ArrowLeft className="w-4 h-4 mr-2" /> New Scan
-                  </Button>
-                )}
-              </div>
+        <AppNav />
+        {view === 'results' && (
+          <div className="border-b border-slate-800 bg-slate-900/60 backdrop-blur-sm">
+            <div className="max-w-7xl mx-auto px-6 py-3">
+              <Button onClick={handleBackToInput} variant="outline" className="border-cyan-500/30 text-cyan-400 hover:bg-cyan-500/10">
+                <ArrowLeft className="w-4 h-4 mr-2" /> New Scan
+              </Button>
             </div>
           </div>
-        </motion.div>
+        )}
 
         {/* Main Content */}
         <div className="max-w-7xl mx-auto px-6 py-12">
