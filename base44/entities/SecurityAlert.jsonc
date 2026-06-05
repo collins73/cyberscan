@@ -1,0 +1,76 @@
+{
+  "name": "SecurityAlert",
+  "type": "object",
+  "properties": {
+    "alert_type": {
+      "type": "string",
+      "enum": [
+        "critical_vulnerability",
+        "new_cve",
+        "threshold_exceeded",
+        "deployment_risk"
+      ],
+      "description": "Type of security alert"
+    },
+    "severity": {
+      "type": "string",
+      "enum": [
+        "critical",
+        "high",
+        "medium",
+        "low"
+      ],
+      "description": "Alert severity level"
+    },
+    "title": {
+      "type": "string",
+      "description": "Alert title"
+    },
+    "description": {
+      "type": "string",
+      "description": "Detailed alert description"
+    },
+    "app_name": {
+      "type": "string",
+      "description": "Related application name"
+    },
+    "scan_id": {
+      "type": "string",
+      "description": "Related scan ID if applicable"
+    },
+    "cve_id": {
+      "type": "string",
+      "description": "Related CVE identifier if applicable"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "active",
+        "acknowledged",
+        "resolved"
+      ],
+      "default": "active",
+      "description": "Alert status"
+    },
+    "acknowledged_by": {
+      "type": "string",
+      "description": "User who acknowledged the alert"
+    },
+    "acknowledged_date": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When alert was acknowledged"
+    },
+    "resolved_date": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When alert was resolved"
+    }
+  },
+  "required": [
+    "alert_type",
+    "severity",
+    "title",
+    "description"
+  ]
+}

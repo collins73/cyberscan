@@ -2,11 +2,12 @@ import React, { useState } from 'react';
 import { base44 } from '@/api/base44Client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Shield, Loader2, ArrowLeft } from 'lucide-react';
+import { Shield, Loader2, ArrowLeft, Code, Github } from 'lucide-react';
 import AppNav from '../components/AppNav';
 import { Button } from '@/components/ui/button';
 
 import CodeInput from '../components/scanner/CodeInput';
+import RepoScanner from '../components/scanner/RepoScanner';
 import ScanResults from '../components/scanner/ScanResults';
 import ScanHistory from '../components/scanner/ScanHistory';
 
@@ -14,6 +15,7 @@ export default function Scanner() {
   const [isScanning, setIsScanning] = useState(false);
   const [currentScan, setCurrentScan] = useState(null);
   const [view, setView] = useState('input');
+  const [scanTab, setScanTab] = useState('code'); // 'code' or 'repo'
 
   const queryClient = useQueryClient();
 
@@ -288,8 +290,42 @@ Be specific and cite actual CVE numbers, CISA advisories, or NIST NVD data when 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
               <div className="lg:col-span-2">
                 <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
-                  <h2 className="text-2xl font-bold text-white mb-6">Submit Code for Analysis</h2>
-                  <CodeInput onScanStart={handleScanStart} />
+                  {/* Scan Mode Tabs */}
+                  <div className="flex gap-2 mb-6">
+                    <button
+                      onClick={() => setScanTab('code')}
+                      className={`flex items-center gap-2 px-5 py-2.5 rounded-lg font-semibold text-sm transition-all ${
+                        scanTab === 'code'
+                          ? 'bg-cyan-500 text-black'
+                          : 'bg-slate-800 text-slate-400 hover:bg-slate-700 hover:text-white'
+                      }`}
+                    >
+                      <Code className="w-4 h-4" /> Code / File
+                    </button>
+                    <button
+                      onClick={() => setScanTab('repo')}
+                      className={`flex items-center gap-2 px-5 py-2.5 rounded-lg font-semibold text-sm transition-all ${
+                        scanTab === 'repo'
+                          ? 'bg-cyan-500 text-black'
+                          : 'bg-slate-800 text-slate-400 hover:bg-slate-700 hover:text-white'
+                      }`}
+                    >
+                      <Github className="w-4 h-4" /> Repository
+                    </button>
+                  </div>
+
+                  {scanTab === 'code' ? (
+                    <CodeInput onScanStart={handleScanStart} />
+                  ) : (
+                    <RepoScanner
+                      onScanStart={() => setIsScanning(true)}
+                      onScanComplete={(scanData, meta) => {
+                        setIsScanning(false);
+                        setCurrentScan({ ...scanData, _repoMeta: meta });
+                        setView('results');
+                      }}
+                    />
+                  )}
                 </motion.div>
               </div>
               <div className="lg:col-span-1">

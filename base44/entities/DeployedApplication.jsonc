@@ -1,0 +1,70 @@
+{
+  "name": "DeployedApplication",
+  "type": "object",
+  "properties": {
+    "app_name": {
+      "type": "string",
+      "description": "Name of the deployed application"
+    },
+    "environment": {
+      "type": "string",
+      "enum": [
+        "development",
+        "staging",
+        "production"
+      ],
+      "default": "production",
+      "description": "Deployment environment"
+    },
+    "version": {
+      "type": "string",
+      "description": "Application version or commit hash"
+    },
+    "language": {
+      "type": "string",
+      "description": "Primary programming language"
+    },
+    "last_scan_id": {
+      "type": "string",
+      "description": "Reference to the last security scan"
+    },
+    "security_score": {
+      "type": "number",
+      "description": "Current security score"
+    },
+    "critical_vulns": {
+      "type": "number",
+      "default": 0,
+      "description": "Number of critical vulnerabilities"
+    },
+    "high_vulns": {
+      "type": "number",
+      "default": 0,
+      "description": "Number of high severity vulnerabilities"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "healthy",
+        "warning",
+        "critical"
+      ],
+      "default": "healthy",
+      "description": "Overall security status"
+    },
+    "last_monitored": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Last monitoring check timestamp"
+    },
+    "deployment_date": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the application was deployed"
+    }
+  },
+  "required": [
+    "app_name",
+    "environment"
+  ]
+}
