@@ -11,8 +11,8 @@ import { Button } from '@/components/ui/button';
 const STEPS = [
   {
     icon: Code,
-    title: 'Paste or Upload Code',
-    description: 'Submit any code file or paste code snippets directly into the scanner.',
+    title: 'Connect Your Repo or Paste Code',
+    description: 'Connect your GitHub repository for full codebase scanning, or paste code snippets for instant analysis — no size limits.',
     color: 'cyan',
     demo: (
       <div className="bg-slate-950 rounded-lg p-4 font-mono text-xs text-green-400 border border-cyan-500/20">
@@ -94,6 +94,7 @@ const STEPS = [
 
 const FEATURES = [
   { icon: BarChart3, label: 'Analytics', desc: 'Track your security posture over time', path: '/Analytics', color: 'blue' },
+  { icon: GitPullRequest, label: 'Repo Scanner', desc: 'Connect GitHub and scan your entire codebase instantly', path: '/Scanner', color: 'green' },
   { icon: Globe, label: 'Threat Intel', desc: 'Real-time CVE correlation & threat data', path: '/ThreatIntel', color: 'orange' },
   { icon: Activity, label: 'Monitoring', desc: 'Monitor deployed apps in real-time', path: '/Monitoring', color: 'cyan' },
   { icon: Shield, label: 'AI Scanner', desc: 'Detect 20+ vulnerability types instantly', path: '/Scanner', color: 'indigo' },
@@ -160,7 +161,7 @@ export default function Landing() {
               </span>
             </h1>
             <p className="text-slate-400 text-lg md:text-xl max-w-2xl mx-auto mb-10">
-              CodeGuard scans your code for vulnerabilities, generates AI-powered fixes, and monitors your security posture — all in one platform.
+              CodeGuard connects to your GitHub repository and scans your entire codebase for vulnerabilities — no copy-paste, no limits. AI-powered fixes, security monitoring, and enterprise-grade protection all in one platform.
             </p>
             <div className="flex gap-4 justify-center flex-wrap">
               <Button
@@ -190,7 +191,7 @@ export default function Landing() {
           >
             {[
               { value: '20+', label: 'Vuln Types' },
-              { value: '1-click', label: 'Auto-Fix PR' },
+              { value: 'Full', label: 'Repo Scan' },
               { value: '100%', label: 'AI-Powered' },
             ].map(stat => (
               <div key={stat.label} className="text-center">
