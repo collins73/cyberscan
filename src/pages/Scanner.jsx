@@ -318,9 +318,7 @@ Be specific and cite actual CVE numbers, CISA advisories, or NIST NVD data when 
                     <CodeInput onScanStart={handleScanStart} />
                   ) : (
                     <RepoScanner
-                      onScanStart={() => setIsScanning(true)}
                       onScanComplete={(scanData, meta) => {
-                        setIsScanning(false);
                         setCurrentScan({ ...scanData, _repoMeta: meta });
                         setView('results');
                       }}
