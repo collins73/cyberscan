@@ -1,16 +1,18 @@
 import React from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Shield, BarChart3, Activity, Globe } from 'lucide-react';
+import { Shield, BarChart3, Activity, Globe, BookOpen } from 'lucide-react';
 
 const NAV_ITEMS = [
   { label: 'Analytics', path: '/Analytics', icon: BarChart3, color: 'cyan' },
   { label: 'Threat Intel', path: '/ThreatIntel', icon: Globe, color: 'orange' },
   { label: 'Monitoring', path: '/Monitoring', icon: Activity, color: 'cyan' },
+  { label: 'Manual', path: '/OperationsManual', icon: BookOpen, color: 'blue' },
 ];
 
 const colorClasses = {
   cyan: 'text-cyan-400 border-cyan-500/40 bg-cyan-500/10',
   orange: 'text-orange-400 border-orange-500/40 bg-orange-500/10',
+  blue: 'text-blue-400 border-blue-500/40 bg-blue-500/10',
 };
 
 export default function AppNav() {

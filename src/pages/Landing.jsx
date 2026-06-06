@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import {
   Shield, Code, GitPullRequest, BarChart3, Activity, Globe,
   ChevronRight, Play, CheckCircle, ArrowRight,
-  Zap, Lock
+  Zap, Lock, BookOpen
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
@@ -139,12 +139,20 @@ export default function Landing() {
               </div>
               <span className="text-xl font-bold">CodeGuard</span>
             </div>
-            <Button
-              onClick={() => navigate('/Scanner')}
-              className="bg-gradient-to-r from-cyan-500 to-blue-500 text-black font-bold hover:opacity-90"
-            >
-              Enter Dashboard <ArrowRight className="w-4 h-4 ml-1" />
-            </Button>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => navigate('/OperationsManual')}
+                className="flex items-center gap-1.5 text-slate-400 hover:text-cyan-400 text-sm transition-colors"
+              >
+                <BookOpen className="w-4 h-4" /> User Manual
+              </button>
+              <Button
+                onClick={() => navigate('/Scanner')}
+                className="bg-gradient-to-r from-cyan-500 to-blue-500 text-black font-bold hover:opacity-90"
+              >
+                Enter Dashboard <ArrowRight className="w-4 h-4 ml-1" />
+              </Button>
+            </div>
           </div>
         </nav>
 
