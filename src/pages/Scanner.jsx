@@ -174,7 +174,8 @@ Also provide an overall security score from 0-100 (100 being most secure).`,
       setView('results');
     } catch (error) {
       console.error('Scan failed:', error);
-      alert('Scan failed. Please try again.');
+      const msg = error.response?.data?.error || error.message || 'Unknown error';
+      alert(`Scan failed: ${msg}`);
     } finally {
       setIsScanning(false);
     }

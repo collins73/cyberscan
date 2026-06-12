@@ -49,7 +49,9 @@ export default function RepoScanner({ onScanComplete, onScanStart }) {
 
       onScanComplete?.(response.data.scan, response.data);
     } catch (error) {
-      alert(`Repository scan failed: ${error.message}`);
+      const msg = error.response?.data?.error || error.message || 'Unknown server error';
+      alert(`Repository scan failed: ${msg}`);
+      console.error('scanRepository error:', error);
     } finally {
       setIsScanning(false);
       setProgress('');
