@@ -159,6 +159,28 @@ export default function ScanHistory({ scans, onViewScan, onArchiveScan, onDelete
         </motion.div>
       )}
       </AnimatePresence>
+
+      <AlertDialog open={!!scanToDelete} onOpenChange={(open) => !open && setScanToDelete(null)}>
+        <AlertDialogContent className="bg-slate-900 border-slate-800">
+          <AlertDialogHeader>
+            <AlertDialogTitle className="text-white">Delete this scan?</AlertDialogTitle>
+            <AlertDialogDescription className="text-slate-400">
+              This will permanently delete the scan for "{scanToDelete?.file_name}". This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel className="bg-slate-800 border-slate-700 text-slate-300 hover:bg-slate-700 hover:text-white">
+              Cancel
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => { onDeleteScan(scanToDelete); setScanToDelete(null); }}
+              className="bg-red-600 hover:bg-red-700 text-white"
+            >
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </Card>
   );
 }
