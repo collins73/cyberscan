@@ -19,9 +19,20 @@ export default function Scanner() {
 
   const queryClient = useQueryClient();
 
-  const { data: scans = [] } = useQuery({
+  const { data: allScans = [] } = useQuery({
     queryKey: ['codeScans'],
-    queryFn: () => base44.entities.CodeScan.list('-created_date', 10)
+    queryFn: () => base44.entities.CodeScan.list('-created_date', 50)
+  });
+  const scans = allScans.filter((s) => !s.archived).slice(0, 10);
+
+  const archiveScanMutation = useMutation({
+    mutationFn: (id) => base44.entities.CodeScan.update(id, { archived: true }),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['codeScans'] })
+  });
+
+  const deleteScanMutation = useMutation({
+    mutationFn: (id) => base44.entities.CodeScan.delete(id),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['codeScans'] })
   });
 
 
@@ -330,7 +341,12 @@ Be specific and cite actual CVE numbers, CISA advisories, or NIST NVD data when 
               <div className="lg:col-span-1">
                 <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
                   <h2 className="text-2xl font-bold text-white mb-6">History</h2>
-                  <ScanHistory scans={scans} onViewScan={handleViewScan} />
+                  <ScanHistory
+                    scans={scans}
+                    onViewScan={handleViewScan}
+                    onArchiveScan={(scan) => archiveScanMutation.mutate(scan.id)}
+                    onDeleteScan={(scan) => deleteScanMutation.mutate(scan.id)}
+                  />
                 </motion.div>
               </div>
             </div>

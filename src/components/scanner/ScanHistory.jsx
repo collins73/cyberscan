@@ -3,11 +3,16 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { format } from "date-fns";
-import { FileCode, Eye, Shield, ChevronDown, ChevronUp } from "lucide-react";
+import { FileCode, Eye, Shield, ChevronDown, ChevronUp, Archive, Trash2 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import {
+  AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
+  AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle
+} from "@/components/ui/alert-dialog";
 
-export default function ScanHistory({ scans, onViewScan }) {
+export default function ScanHistory({ scans, onViewScan, onArchiveScan, onDeleteScan }) {
   const [isCollapsed, setIsCollapsed] = useState(false);
+  const [scanToDelete, setScanToDelete] = useState(null);
   if (!scans || scans.length === 0) {
     return (
       <Card className="bg-slate-900/50 border-slate-800">
@@ -89,15 +94,63 @@ export default function ScanHistory({ scans, onViewScan }) {
                     )}
                   </div>
                 </div>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => onViewScan(scan)}
-                  className="border-cyan-500/30 text-cyan-400 hover:bg-cyan-500/10 hover:text-cyan-300"
-                >
-                  <Eye className="w-4 h-4 mr-2" />
-                  View
-                </Button>
+                <div className="flex items-center gap-2 flex-shrink-0">
+                  <div className="flex items-center gap-2 flex-shrink-0">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => onViewScan(scan)}
+                      className="border-cyan-500/30 text-cyan-400 hover:bg-cyan-500/10 hover:text-cyan-300"
+                    >
+                      <Eye className="w-4 h-4 mr-2" />
+                      View
+                    </Button>
+                    {onArchiveScan && (
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => onArchiveScan(scan)}
+                        title="Archive scan"
+                        className="text-slate-400 hover:text-yellow-400 hover:bg-yellow-500/10"
+                      >
+                        <Archive className="w-4 h-4" />
+                      </Button>
+                    )}
+                    {onDeleteScan && (
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => setScanToDelete(scan)}
+                        title="Delete scan"
+                        className="text-slate-400 hover:text-red-400 hover:bg-red-500/10"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </Button>
+                    )}
+                  </div>
+                  {onArchiveScan && (
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => onArchiveScan(scan)}
+                      title="Archive scan"
+                      className="text-slate-400 hover:text-amber-400 hover:bg-amber-500/10"
+                    >
+                      <Archive className="w-4 h-4" />
+                    </Button>
+                  )}
+                  {onDeleteScan && (
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => setScanToDelete(scan)}
+                      title="Delete scan"
+                      className="text-slate-400 hover:text-red-400 hover:bg-red-500/10"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </Button>
+                  )}
+                </div>
               </div>
                 </motion.div>
               ))}
