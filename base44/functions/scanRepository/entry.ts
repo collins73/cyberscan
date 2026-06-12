@@ -235,50 +235,64 @@ Deno.serve(async (req) => {
       project_name: projectName || null
     };
 
-    const savedScan = await base44.asServiceRole.entities.CodeScan.create(scanData);
+    let savedScan = null;
 
-    // Create alerts for critical/high
-    const critical = allVulnerabilities.filter(v => v.severity === 'critical');
-    const high = allVulnerabilities.filter(v => v.severity === 'high');
-
-    if (critical.length > 0) {
-      await base44.asServiceRole.entities.SecurityAlert.create({
-        alert_type: 'critical_vulnerability',
-        severity: 'critical',
-        title: `${critical.length} Critical Vulnerabilities in ${repoName}`,
-        description: `Critical issues: ${critical.map(v => v.title).join(', ')}`,
-        app_name: repoName,
-        scan_id: savedScan.id,
-        status: 'active'
-      });
-    } else if (high.length > 0) {
-      await base44.asServiceRole.entities.SecurityAlert.create({
-        alert_type: 'threshold_exceeded',
-        severity: 'high',
-        title: `${high.length} High Severity Issues in ${repoName}`,
-        description: `High severity vulnerabilities found in repository scan`,
-        app_name: repoName,
-        scan_id: savedScan.id,
-        status: 'active'
-      });
+    // Try to save scan record — don't crash if it fails
+    try {
+      savedScan = await base44.asServiceRole.entities.CodeScan.create(scanData);
+    } catch (saveError) {
+      console.error('Failed to save CodeScan record:', saveError.message);
     }
 
-    // Save vulnerability metrics
-    for (const vuln of allVulnerabilities) {
-      await base44.asServiceRole.entities.VulnerabilityMetric.create({
-        vulnerability_type: vuln.title,
-        severity: vuln.severity,
-        language: 'Repository',
-        scan_id: savedScan.id,
-        count: 1,
-        security_score: overallScore
-      });
+    // Create alerts for critical/high (best-effort)
+    if (savedScan) {
+      try {
+        const critical = allVulnerabilities.filter(v => v.severity === 'critical');
+        const high = allVulnerabilities.filter(v => v.severity === 'high');
+
+        if (critical.length > 0) {
+          await base44.asServiceRole.entities.SecurityAlert.create({
+            alert_type: 'critical_vulnerability',
+            severity: 'critical',
+            title: `${critical.length} Critical Vulnerabilities in ${repoName}`,
+            description: `Critical issues: ${critical.map(v => v.title).join(', ')}`,
+            app_name: repoName,
+            scan_id: savedScan.id,
+            status: 'active'
+          });
+        } else if (high.length > 0) {
+          await base44.asServiceRole.entities.SecurityAlert.create({
+            alert_type: 'threshold_exceeded',
+            severity: 'high',
+            title: `${high.length} High Severity Issues in ${repoName}`,
+            description: `High severity vulnerabilities found in repository scan`,
+            app_name: repoName,
+            scan_id: savedScan.id,
+            status: 'active'
+          });
+        }
+
+        // Save vulnerability metrics
+        for (const vuln of allVulnerabilities) {
+          await base44.asServiceRole.entities.VulnerabilityMetric.create({
+            vulnerability_type: vuln.title,
+            severity: vuln.severity,
+            language: 'Repository',
+            scan_id: savedScan.id,
+            count: 1,
+            security_score: overallScore
+          });
+        }
+      } catch (metaError) {
+        console.error('Failed to save alerts/metrics:', metaError.message);
+        // Continue — scan results are still valid
+      }
     }
 
     return Response.json({
       success: true,
       scan: scanData,
-      scanId: savedScan.id,
+      scanId: savedScan?.id || null,
       filesScanned: filesWithContent.length,
       totalFiles: allFiles.length,
       vulnerabilitiesFound: allVulnerabilities.length,
