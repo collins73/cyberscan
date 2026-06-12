@@ -81,7 +81,7 @@ async function analyzeFileBatch(files, base44) {
   const combinedCode = files.map(f => `\n\n// === FILE: ${f.path} ===\n${f.content}`).join('');
   const fileList = files.map(f => f.path).join(', ');
 
-  const response = await base44.asServiceRole.integrations.Core.InvokeLLM({
+  const response = await base44.integrations.Core.InvokeLLM({
     prompt: `You are an expert cybersecurity code analyst. Analyze the following code files for security vulnerabilities.
 
 Files being analyzed: ${fileList}
@@ -239,7 +239,7 @@ Deno.serve(async (req) => {
 
     // Try to save scan record — don't crash if it fails
     try {
-      savedScan = await base44.asServiceRole.entities.CodeScan.create(scanData);
+      savedScan = await base44.entities.CodeScan.create(scanData);
     } catch (saveError) {
       console.error('Failed to save CodeScan record:', saveError.message);
     }
@@ -251,7 +251,7 @@ Deno.serve(async (req) => {
         const high = allVulnerabilities.filter(v => v.severity === 'high');
 
         if (critical.length > 0) {
-          await base44.asServiceRole.entities.SecurityAlert.create({
+          await base44.entities.SecurityAlert.create({
             alert_type: 'critical_vulnerability',
             severity: 'critical',
             title: `${critical.length} Critical Vulnerabilities in ${repoName}`,
@@ -261,7 +261,7 @@ Deno.serve(async (req) => {
             status: 'active'
           });
         } else if (high.length > 0) {
-          await base44.asServiceRole.entities.SecurityAlert.create({
+          await base44.entities.SecurityAlert.create({
             alert_type: 'threshold_exceeded',
             severity: 'high',
             title: `${high.length} High Severity Issues in ${repoName}`,
@@ -274,7 +274,7 @@ Deno.serve(async (req) => {
 
         // Save vulnerability metrics
         for (const vuln of allVulnerabilities) {
-          await base44.asServiceRole.entities.VulnerabilityMetric.create({
+          await base44.entities.VulnerabilityMetric.create({
             vulnerability_type: vuln.title,
             severity: vuln.severity,
             language: 'Repository',
