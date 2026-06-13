@@ -31,6 +31,9 @@ export default function AppNav() {
             <Shield className="w-5 h-5 text-black" />
           </div>
           <span className="text-xl font-bold text-white">CodeGuard</span>
+          <span className="text-[10px] font-bold tracking-wider text-green-400 border border-green-500/40 bg-green-500/10 rounded px-1.5 py-0.5">
+            AsCaaS
+          </span>
         </button>
 
         {/* Nav Links */}

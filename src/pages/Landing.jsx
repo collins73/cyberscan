@@ -93,11 +93,12 @@ const STEPS = [
 ];
 
 const FEATURES = [
-  { icon: BarChart3, label: 'Analytics', desc: 'Track your security posture over time', path: '/Analytics', color: 'blue' },
-  { icon: GitPullRequest, label: 'Repo Scanner', desc: 'Connect GitHub and scan your entire codebase instantly', path: '/Scanner', color: 'green' },
-  { icon: Globe, label: 'Threat Intel', desc: 'Real-time CVE correlation & threat data', path: '/ThreatIntel', color: 'orange' },
-  { icon: Activity, label: 'Monitoring', desc: 'Monitor deployed apps in real-time', path: '/Monitoring', color: 'cyan' },
-  { icon: Shield, label: 'AI Scanner', desc: 'Detect 20+ vulnerability types instantly', path: '/Scanner', color: 'indigo' },
+  { emoji: '🔍', label: 'AI Code Scanning', desc: 'Detect vulnerabilities across OWASP Top 10, CVEs, and custom policies in seconds', path: '/Scanner', color: 'cyan' },
+  { emoji: '🤖', label: 'Auto-Fix PRs', desc: 'CodeGuard generates the fix and opens a GitHub Pull Request automatically — no manual patching', path: '/Scanner', color: 'green' },
+  { emoji: '🛡️', label: 'Security Policies', desc: 'Define org-wide security rules and enforce them across every repo and team', path: '/PolicyEngine', color: 'blue' },
+  { emoji: '📊', label: 'Compliance Reporting', desc: 'Generate audit-ready reports for SOC 2, ISO 27001, and PCI DSS', path: '/Analytics', color: 'violet' },
+  { emoji: '🔴', label: 'Red Team Simulation', desc: 'Simulate real-world attack scenarios before bad actors do', path: '/RedTeam', color: 'red' },
+  { emoji: '⚡', label: 'CI/CD Integration', desc: 'Block insecure code at the pipeline level before it ever hits production', path: '/Monitoring', color: 'orange' },
 ];
 
 const colorMap = {
@@ -138,6 +139,9 @@ export default function Landing() {
                 <Shield className="w-5 h-5 text-black" />
               </div>
               <span className="text-xl font-bold">CodeGuard</span>
+              <span className="text-[10px] font-bold tracking-wider text-green-400 border border-green-500/40 bg-green-500/10 rounded px-1.5 py-0.5">
+                AsCaaS
+              </span>
             </div>
             <div className="flex items-center gap-2">
               <button
@@ -159,17 +163,17 @@ export default function Landing() {
         {/* Hero */}
         <section className="max-w-6xl mx-auto px-6 py-24 text-center">
           <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
-            <div className="inline-flex items-center gap-2 bg-cyan-500/10 border border-cyan-500/30 rounded-full px-4 py-1.5 text-cyan-400 text-sm mb-6">
-              <Zap className="w-4 h-4" /> AI-Powered Security Analysis
+            <div className="inline-flex items-center gap-2 bg-green-500/10 border border-green-500/30 rounded-full px-4 py-1.5 text-green-400 text-sm mb-6">
+              <Zap className="w-4 h-4" /> AsCaaS Platform
             </div>
             <h1 className="text-5xl md:text-7xl font-extrabold mb-6 leading-tight">
-              Secure Your Code<br />
+              Application Security<br />
               <span className="bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent">
-                Before Attackers Do
+                Code as a Service
               </span>
             </h1>
             <p className="text-slate-400 text-lg md:text-xl max-w-2xl mx-auto mb-10">
-              CodeGuard connects to your GitHub repository and scans your entire codebase for vulnerabilities — no copy-paste, no limits. AI-powered fixes, security monitoring, and enterprise-grade protection all in one platform.
+              CodeGuard is the first AsCaaS platform — AI-powered security scanning, auto-remediation, and compliance built directly into your dev workflow. Ship secure code without slowing down.
             </p>
             <div className="flex gap-4 justify-center flex-wrap">
               <Button
@@ -195,15 +199,15 @@ export default function Landing() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.4 }}
-            className="grid grid-cols-3 gap-6 max-w-lg mx-auto mt-16"
+            className="grid grid-cols-3 gap-6 max-w-2xl mx-auto mt-16"
           >
             {[
-              { value: '20+', label: 'Vuln Types' },
-              { value: 'Full', label: 'Repo Scan' },
-              { value: '100%', label: 'AI-Powered' },
+              { value: '10,000+', label: 'Vulnerabilities Detected' },
+              { value: 'Auto-Fix', label: 'via GitHub PR' },
+              { value: 'OWASP', label: 'Top 10 Coverage' },
             ].map(stat => (
               <div key={stat.label} className="text-center">
-                <p className="text-3xl font-bold text-cyan-400">{stat.value}</p>
+                <p className="text-3xl font-bold text-green-400">{stat.value}</p>
                 <p className="text-slate-500 text-sm">{stat.label}</p>
               </div>
             ))}
@@ -290,11 +294,10 @@ export default function Landing() {
         <section className="max-w-6xl mx-auto px-6 py-20">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold mb-3">Core Features</h2>
-            <p className="text-slate-400">Everything you need to keep your code secure</p>
+            <p className="text-slate-400">Everything an AsCaaS platform needs to keep your code secure</p>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {FEATURES.map((feature) => {
-              const Icon = feature.icon;
               const cls = colorMap[feature.color];
               return (
                 <motion.div
@@ -303,7 +306,7 @@ export default function Landing() {
                   onClick={() => navigate(feature.path)}
                   className={`border rounded-xl p-6 cursor-pointer transition-all hover:shadow-lg bg-slate-900/50 ${cls}`}
                 >
-                  <Icon className="w-7 h-7 mb-4" />
+                  <span className="text-3xl block mb-4">{feature.emoji}</span>
                   <p className="font-semibold text-base text-white">{feature.label}</p>
                   <p className="text-slate-500 text-sm mt-1">{feature.desc}</p>
                 </motion.div>
@@ -348,7 +351,7 @@ export default function Landing() {
             <Shield className="w-4 h-4 text-cyan-500" />
             <span className="text-slate-400 font-semibold">CodeGuard</span>
           </div>
-          <p>AI-Powered Security Analysis Platform</p>
+          <p>Application Security Code as a Service (AsCaaS)</p>
           <p className="mt-2">© {new Date().getFullYear()} Demayne Collins. All rights reserved.</p>
         </footer>
       </div>
