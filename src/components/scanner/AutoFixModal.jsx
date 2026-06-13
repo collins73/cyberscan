@@ -22,6 +22,8 @@ export default function AutoFixModal({ scanData, onClose }) {
   const fixableVulns = vulnerabilities?.filter(v => v.severity !== 'low') || vulnerabilities || [];
   const selectedVulns = fixableVulns.filter((_, i) => selectedVulnIds.includes(i));
 
+  const isRepoValid = repoFullName.trim().includes('/');
+
   const toggleVuln = (i) => {
     setSelectedVulnIds(prev => prev.includes(i) ? prev.filter(x => x !== i) : [...prev, i]);
   };
@@ -95,9 +97,18 @@ export default function AutoFixModal({ scanData, onClose }) {
                   <input
                     value={repoFullName}
                     onChange={e => setRepoFullName(e.target.value)}
-                    placeholder="e.g. octocat/hello-world"
-                    className="w-full bg-slate-950 border border-slate-700 text-slate-200 rounded-lg px-3 py-2 text-sm focus:border-green-500/60 focus:outline-none"
+                    placeholder="e.g. collins73/cyberscan (owner/repo-name)"
+                    className={`w-full bg-slate-950 border text-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none ${
+                      repoFullName.trim() && !isRepoValid
+                        ? 'border-red-500/60 focus:border-red-500'
+                        : 'border-slate-700 focus:border-green-500/60'
+                    }`}
                   />
+                  {repoFullName.trim() && !isRepoValid ? (
+                    <p className="text-red-400 text-xs mt-1">Must be in owner/repo format (e.g. collins73/cyberscan)</p>
+                  ) : (
+                    <p className="text-slate-500 text-xs mt-1">Format: GitHub username or org / repository name</p>
+                  )}
                 </div>
                 <div className="grid grid-cols-2 gap-3">
                   <div>
@@ -162,7 +173,7 @@ export default function AutoFixModal({ scanData, onClose }) {
 
               <Button
                 onClick={handleSubmit}
-                disabled={!repoFullName.trim() || !originalCode.trim() || selectedVulns.length === 0}
+                disabled={!isRepoValid || !originalCode.trim() || selectedVulns.length === 0}
                 className="w-full bg-gradient-to-r from-green-600 to-emerald-500 hover:from-green-700 hover:to-emerald-600 text-white font-bold py-3 disabled:opacity-40"
               >
                 <Zap className="w-4 h-4 mr-2" />
