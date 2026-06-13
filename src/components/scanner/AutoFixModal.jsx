@@ -5,11 +5,25 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { X, GitPullRequest, Loader2, CheckCircle, AlertTriangle, ExternalLink, ChevronRight, Zap } from 'lucide-react';
 
+// Strip a leading "owner/reponame/" or "reponame/" prefix so only the
+// path within the repo remains (e.g. "collins73/cyberscan/src/app.py" -> "src/app.py").
+const stripRepoPrefix = (value) => {
+  if (!value) return '';
+  const segments = value.split('/').filter(Boolean);
+  // 3+ segments => assume first two are owner/repo, keep the rest
+  if (segments.length >= 3) return segments.slice(2).join('/');
+  // exactly 2 segments => assume "reponame/path", drop the first
+  if (segments.length === 2) return segments.slice(1).join('/');
+  return value;
+};
+
 export default function AutoFixModal({ scanData, onClose }) {
   const { vulnerabilities, file_name, code_snippet } = scanData;
 
   const [repoFullName, setRepoFullName] = useState('');
-  const [filePath, setFilePath] = useState(file_name && file_name !== 'Manual Input' ? file_name : '');
+  const [filePath, setFilePath] = useState(
+    file_name && file_name !== 'Manual Input' ? stripRepoPrefix(file_name) : ''
+  );
   const [branch, setBranch] = useState('main');
   const [originalCode, setOriginalCode] = useState(code_snippet || '');
   const [selectedVulnIds, setSelectedVulnIds] = useState(
@@ -116,9 +130,10 @@ export default function AutoFixModal({ scanData, onClose }) {
                     <input
                       value={filePath}
                       onChange={e => setFilePath(e.target.value)}
-                      placeholder="src/app.py"
+                      placeholder="e.g. src/components/App.jsx"
                       className="w-full bg-slate-950 border border-slate-700 text-slate-200 rounded-lg px-3 py-2 text-sm focus:border-green-500/60 focus:outline-none"
                     />
+                    <p className="text-slate-500 text-xs mt-1">Path to the file within the repository (do not include the repo name)</p>
                   </div>
                   <div>
                     <label className="text-slate-400 text-xs mb-1 block">Base branch</label>
