@@ -15,6 +15,34 @@ const LANG_MAP = {
   html: 'HTML', css: 'CSS', yaml: 'YAML', yml: 'YAML', json: 'JSON'
 };
 
+// Resolve the branch to use — verify the repo exists and fall back to its default branch
+async function resolveBranch(owner, repo, requestedBranch, headers) {
+  const repoRes = await fetch(
+    `https://api.github.com/repos/${owner}/${repo}`,
+    { headers }
+  );
+  if (repoRes.status === 404) {
+    throw new Error(`Repository "${owner}/${repo}" not found. Check the URL, and for private repos make sure the GitHub token has access.`);
+  }
+  if (!repoRes.ok) {
+    const err = await repoRes.json().catch(() => ({}));
+    throw new Error(`Could not access repository: ${err.message || repoRes.statusText}`);
+  }
+  const repoData = await repoRes.json();
+  const defaultBranch = repoData.default_branch || 'main';
+
+  // If a branch was requested, verify it exists; otherwise use the default branch
+  if (requestedBranch) {
+    const branchRes = await fetch(
+      `https://api.github.com/repos/${owner}/${repo}/branches/${requestedBranch}`,
+      { headers }
+    );
+    if (branchRes.ok) return requestedBranch;
+    // Requested branch doesn't exist — fall back to default
+  }
+  return defaultBranch;
+}
+
 // Recursively fetch all code files from a GitHub repo tree
 async function fetchRepoFiles(owner, repo, branch, token) {
   const headers = {
@@ -28,8 +56,8 @@ async function fetchRepoFiles(owner, repo, branch, token) {
     { headers }
   );
   if (!branchRes.ok) {
-    const err = await branchRes.json();
-    throw new Error(`Branch fetch failed: ${err.message}`);
+    const err = await branchRes.json().catch(() => ({}));
+    throw new Error(`Branch "${branch}" not found in ${owner}/${repo}: ${err.message || branchRes.statusText}`);
   }
   const branchData = await branchRes.json();
   const treeSha = branchData.commit.commit.tree.sha;
@@ -147,7 +175,10 @@ Deno.serve(async (req) => {
       return Response.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const { repoUrl, branch = 'main', projectId, projectName, maxFiles = 30 } = await req.json();
+    const body = await req.json();
+    const { repoUrl, projectId, projectName, maxFiles = 30 } = body;
+    // Treat empty/whitespace branch as "auto-detect" so we use the repo's default branch
+    const requestedBranch = (body.branch || '').trim() || null;
 
     if (!repoUrl) {
       return Response.json({ error: 'repoUrl is required' }, { status: 400 });
@@ -165,11 +196,18 @@ Deno.serve(async (req) => {
       return Response.json({ error: 'GITHUB_TOKEN not configured' }, { status: 500 });
     }
 
+    // Resolve branch (verify repo, fall back to default branch if needed)
+    const headers = {
+      'Authorization': `token ${token}`,
+      'Accept': 'application/vnd.github.v3+json'
+    };
+    const branch = await resolveBranch(owner, repo, requestedBranch, headers);
+
     // Fetch file list
     const allFiles = await fetchRepoFiles(owner, repo, branch, token);
 
     if (allFiles.length === 0) {
-      return Response.json({ error: 'No scannable code files found in repository' }, { status: 400 });
+      return Response.json({ error: `No scannable source-code files found in ${owner}/${repo} on branch "${branch}". The repository may only contain non-code files.` }, { status: 400 });
     }
 
     // Limit to maxFiles most important files (prioritize certain extensions)
