@@ -65,6 +65,26 @@
     "scan_duration": {
       "type": "number",
       "description": "Duration of scan in seconds"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "running",
+        "completed",
+        "failed"
+      ],
+      "default": "completed",
+      "description": "Status of the scan job (used for async repository scans)"
+    },
+    "status_message": {
+      "type": "string",
+      "description": "Progress or error message for the scan job"
+    },
+    "archived": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether this scan has been archived (hidden from active history)"
     }
   },
   "required": []

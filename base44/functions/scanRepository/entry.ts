@@ -167,6 +167,127 @@ Provide an overall security score from 0-100.`,
   return response;
 }
 
+// Heavy background work — fetches file contents, runs the LLM analysis,
+// and updates the scan record. Runs after the HTTP response is sent.
+async function runScanJob({ base44, owner, repo, repoUrl, branch, token, allFiles, maxFiles, scanId }) {
+  const repoName = `${owner}/${repo}`;
+  try {
+    // Limit to maxFiles most important files (prioritize certain extensions)
+    const priorityExts = new Set(['py', 'js', 'ts', 'java', 'php', 'rb', 'go', 'cs', 'cpp', 'c', 'sql', 'sh', 'env']);
+    const sorted = allFiles.sort((a, b) => {
+      const aExt = a.path.split('.').pop()?.toLowerCase();
+      const bExt = b.path.split('.').pop()?.toLowerCase();
+      return (priorityExts.has(bExt) ? 1 : 0) - (priorityExts.has(aExt) ? 1 : 0);
+    });
+    const selectedFiles = sorted.slice(0, maxFiles);
+
+    // Fetch file contents in parallel (batches of 5)
+    const filesWithContent = [];
+    for (let i = 0; i < selectedFiles.length; i += 5) {
+      const batch = selectedFiles.slice(i, i + 5);
+      const contents = await Promise.all(
+        batch.map(async (f) => {
+          const content = await fetchFileContent(owner, repo, f.path, branch, token);
+          if (!content || content.trim().length === 0) return null;
+          const ext = f.path.split('.').pop()?.toLowerCase();
+          return { path: f.path, content, language: LANG_MAP[ext] || ext };
+        })
+      );
+      filesWithContent.push(...contents.filter(Boolean));
+    }
+
+    if (filesWithContent.length === 0) {
+      await base44.entities.CodeScan.update(scanId, {
+        status: 'failed',
+        status_message: 'Could not read any files from the repository'
+      });
+      return;
+    }
+
+    const startTime = Date.now();
+
+    // Split into batches of 5 files for LLM analysis
+    const BATCH_SIZE = 5;
+    const batches = [];
+    for (let i = 0; i < filesWithContent.length; i += BATCH_SIZE) {
+      batches.push(filesWithContent.slice(i, i + BATCH_SIZE));
+    }
+
+    const allVulnerabilities = [];
+    let totalScore = 0;
+    let scoreCount = 0;
+
+    for (const batch of batches) {
+      const result = await analyzeFileBatch(batch, base44);
+      if (result.vulnerabilities) allVulnerabilities.push(...result.vulnerabilities);
+      if (result.overall_score) { totalScore += result.overall_score; scoreCount++; }
+    }
+
+    const overallScore = scoreCount > 0 ? Math.round(totalScore / scoreCount) : 50;
+    const scanDuration = ((Date.now() - startTime) / 1000).toFixed(1);
+
+    // Mark the scan complete with results
+    await base44.entities.CodeScan.update(scanId, {
+      status: 'completed',
+      status_message: '',
+      language: 'Multi-language Repository',
+      code_snippet: `Repository: ${repoUrl}\nBranch: ${branch}\nFiles scanned: ${filesWithContent.length}`,
+      vulnerabilities: allVulnerabilities,
+      overall_score: overallScore,
+      scan_duration: parseFloat(scanDuration)
+    });
+
+    // Create alerts for critical/high (best-effort)
+    try {
+      const critical = allVulnerabilities.filter(v => v.severity === 'critical');
+      const high = allVulnerabilities.filter(v => v.severity === 'high');
+
+      if (critical.length > 0) {
+        await base44.entities.SecurityAlert.create({
+          alert_type: 'critical_vulnerability',
+          severity: 'critical',
+          title: `${critical.length} Critical Vulnerabilities in ${repoName}`,
+          description: `Critical issues: ${critical.map(v => v.title).join(', ')}`,
+          app_name: repoName,
+          scan_id: scanId,
+          status: 'active'
+        });
+      } else if (high.length > 0) {
+        await base44.entities.SecurityAlert.create({
+          alert_type: 'threshold_exceeded',
+          severity: 'high',
+          title: `${high.length} High Severity Issues in ${repoName}`,
+          description: `High severity vulnerabilities found in repository scan`,
+          app_name: repoName,
+          scan_id: scanId,
+          status: 'active'
+        });
+      }
+
+      for (const vuln of allVulnerabilities) {
+        await base44.entities.VulnerabilityMetric.create({
+          vulnerability_type: vuln.title,
+          severity: vuln.severity,
+          language: 'Repository',
+          scan_id: scanId,
+          count: 1,
+          security_score: overallScore
+        });
+      }
+    } catch (metaError) {
+      console.error('Failed to save alerts/metrics:', metaError.message);
+    }
+  } catch (jobError) {
+    console.error('Scan job failed:', jobError.message);
+    try {
+      await base44.entities.CodeScan.update(scanId, {
+        status: 'failed',
+        status_message: jobError.message || 'Scan failed during analysis'
+      });
+    } catch (_) { /* ignore */ }
+  }
+}
+
 Deno.serve(async (req) => {
   try {
     const base44 = createClientFromRequest(req);
@@ -196,145 +317,43 @@ Deno.serve(async (req) => {
       return Response.json({ error: 'GITHUB_TOKEN not configured' }, { status: 500 });
     }
 
-    // Resolve branch (verify repo, fall back to default branch if needed)
+    // --- Quick validation (runs fast, so genuine errors return immediately) ---
     const headers = {
       'Authorization': `token ${token}`,
       'Accept': 'application/vnd.github.v3+json'
     };
     const branch = await resolveBranch(owner, repo, requestedBranch, headers);
-
-    // Fetch file list
     const allFiles = await fetchRepoFiles(owner, repo, branch, token);
 
     if (allFiles.length === 0) {
       return Response.json({ error: `No scannable source-code files found in ${owner}/${repo} on branch "${branch}". The repository may only contain non-code files.` }, { status: 400 });
     }
 
-    // Limit to maxFiles most important files (prioritize certain extensions)
-    const priorityExts = new Set(['py', 'js', 'ts', 'java', 'php', 'rb', 'go', 'cs', 'cpp', 'c', 'sql', 'sh', 'env']);
-    const sorted = allFiles.sort((a, b) => {
-      const aExt = a.path.split('.').pop()?.toLowerCase();
-      const bExt = b.path.split('.').pop()?.toLowerCase();
-      return (priorityExts.has(bExt) ? 1 : 0) - (priorityExts.has(aExt) ? 1 : 0);
-    });
-    const selectedFiles = sorted.slice(0, maxFiles);
-
-    // Fetch file contents in parallel (batches of 5)
-    const filesWithContent = [];
-    for (let i = 0; i < selectedFiles.length; i += 5) {
-      const batch = selectedFiles.slice(i, i + 5);
-      const contents = await Promise.all(
-        batch.map(async (f) => {
-          const content = await fetchFileContent(owner, repo, f.path, branch, token);
-          if (!content || content.trim().length === 0) return null;
-          const ext = f.path.split('.').pop()?.toLowerCase();
-          return { path: f.path, content, language: LANG_MAP[ext] || ext };
-        })
-      );
-      filesWithContent.push(...contents.filter(Boolean));
-    }
-
-    if (filesWithContent.length === 0) {
-      return Response.json({ error: 'Could not read any files from the repository' }, { status: 400 });
-    }
-
-    const startTime = Date.now();
-
-    // Split into batches of 5 files for LLM analysis
-    const BATCH_SIZE = 5;
-    const batches = [];
-    for (let i = 0; i < filesWithContent.length; i += BATCH_SIZE) {
-      batches.push(filesWithContent.slice(i, i + BATCH_SIZE));
-    }
-
-    // Analyze batches (sequentially to avoid rate limits)
-    const allVulnerabilities = [];
-    let totalScore = 0;
-    let scoreCount = 0;
-
-    for (const batch of batches) {
-      const result = await analyzeFileBatch(batch, base44);
-      if (result.vulnerabilities) allVulnerabilities.push(...result.vulnerabilities);
-      if (result.overall_score) { totalScore += result.overall_score; scoreCount++; }
-    }
-
-    const overallScore = scoreCount > 0 ? Math.round(totalScore / scoreCount) : 50;
-    const scanDuration = ((Date.now() - startTime) / 1000).toFixed(1);
-
+    // --- Create a pending scan record and kick off the heavy work in the background ---
     const repoName = `${owner}/${repo}`;
-    const scanData = {
+    const pendingScan = await base44.entities.CodeScan.create({
       file_name: repoName,
       language: 'Multi-language Repository',
-      code_snippet: `Repository: ${repoUrl}\nBranch: ${branch}\nFiles scanned: ${filesWithContent.length}`,
-      vulnerabilities: allVulnerabilities,
-      overall_score: overallScore,
-      scan_duration: parseFloat(scanDuration),
+      code_snippet: `Repository: ${repoUrl}\nBranch: ${branch}`,
+      vulnerabilities: [],
+      overall_score: 0,
+      status: 'running',
+      status_message: `Scanning up to ${maxFiles} files...`,
       project_id: projectId || null,
       project_name: projectName || null
-    };
+    });
 
-    let savedScan = null;
-
-    // Try to save scan record — don't crash if it fails
-    try {
-      savedScan = await base44.entities.CodeScan.create(scanData);
-    } catch (saveError) {
-      console.error('Failed to save CodeScan record:', saveError.message);
-    }
-
-    // Create alerts for critical/high (best-effort)
-    if (savedScan) {
-      try {
-        const critical = allVulnerabilities.filter(v => v.severity === 'critical');
-        const high = allVulnerabilities.filter(v => v.severity === 'high');
-
-        if (critical.length > 0) {
-          await base44.entities.SecurityAlert.create({
-            alert_type: 'critical_vulnerability',
-            severity: 'critical',
-            title: `${critical.length} Critical Vulnerabilities in ${repoName}`,
-            description: `Critical issues: ${critical.map(v => v.title).join(', ')}`,
-            app_name: repoName,
-            scan_id: savedScan.id,
-            status: 'active'
-          });
-        } else if (high.length > 0) {
-          await base44.entities.SecurityAlert.create({
-            alert_type: 'threshold_exceeded',
-            severity: 'high',
-            title: `${high.length} High Severity Issues in ${repoName}`,
-            description: `High severity vulnerabilities found in repository scan`,
-            app_name: repoName,
-            scan_id: savedScan.id,
-            status: 'active'
-          });
-        }
-
-        // Save vulnerability metrics
-        for (const vuln of allVulnerabilities) {
-          await base44.entities.VulnerabilityMetric.create({
-            vulnerability_type: vuln.title,
-            severity: vuln.severity,
-            language: 'Repository',
-            scan_id: savedScan.id,
-            count: 1,
-            security_score: overallScore
-          });
-        }
-      } catch (metaError) {
-        console.error('Failed to save alerts/metrics:', metaError.message);
-        // Continue — scan results are still valid
-      }
-    }
+    // Run the analysis without awaiting — the response returns immediately,
+    // and the job keeps running in the background, updating the scan record.
+    runScanJob({ base44, owner, repo, repoUrl, branch, token, allFiles, maxFiles, scanId: pendingScan.id })
+      .catch(err => console.error('Background scan job error:', err?.message));
 
     return Response.json({
       success: true,
-      scan: scanData,
-      scanId: savedScan?.id || null,
-      filesScanned: filesWithContent.length,
-      totalFiles: allFiles.length,
-      vulnerabilitiesFound: allVulnerabilities.length,
-      overallScore
+      scanId: pendingScan.id,
+      status: 'running',
+      branch,
+      totalFiles: allFiles.length
     });
 
   } catch (error) {

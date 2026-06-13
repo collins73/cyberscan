@@ -37,7 +37,8 @@ export default function RepoScanner({ onScanComplete, onScanStart }) {
     const selectedProject = projects.find(p => p.id === selectedProjectId);
 
     try {
-      setProgress(`Scanning up to ${maxFiles} files — this can take 1–2 minutes for larger repos...`);
+      // Kick off the scan — returns immediately with a scan ID while work runs in the background
+      setProgress('Validating repository and starting scan...');
       const response = await base44.functions.invoke('scanRepository', {
         repoUrl: repoUrl.trim(),
         branch: branch.trim() || null,
@@ -47,20 +48,36 @@ export default function RepoScanner({ onScanComplete, onScanStart }) {
         model: selectedModel === 'automatic' ? null : selectedModel
       });
 
-      onScanComplete?.(response.data.scan, response.data);
-    } catch (error) {
-      const status = error.response?.status;
-      let msg = error.response?.data?.error || error.message || 'Unknown server error';
-      // A timeout / network abort usually means the scan is still running but the browser gave up
-      if (!error.response || status === 504 || /timeout|network|aborted/i.test(msg)) {
-        msg = 'The scan took too long and the connection timed out. Try lowering "Max Files to Scan" to 10–15 and scan again.';
+      const scanId = response.data.scanId;
+      if (!scanId) throw new Error('Scan could not be started');
+
+      // Poll the scan record until it finishes (up to ~5 minutes)
+      setProgress(`Analyzing up to ${maxFiles} files — this can take 1–2 minutes...`);
+      const finalScan = await pollScan(scanId);
+
+      if (finalScan.status === 'failed') {
+        throw new Error(finalScan.status_message || 'Scan failed during analysis');
       }
+      onScanComplete?.(finalScan, { scanId });
+    } catch (error) {
+      const msg = error.response?.data?.error || error.message || 'Unknown server error';
       alert(`Repository scan failed: ${msg}`);
       console.error('scanRepository error:', error);
     } finally {
       setIsScanning(false);
       setProgress('');
     }
+  };
+
+  // Poll a scan record until status is completed or failed (max ~5 min)
+  const pollScan = async (scanId) => {
+    const maxAttempts = 100; // 100 x 3s = 5 minutes
+    for (let i = 0; i < maxAttempts; i++) {
+      await new Promise(r => setTimeout(r, 3000));
+      const scan = await base44.entities.CodeScan.get(scanId);
+      if (scan.status === 'completed' || scan.status === 'failed') return scan;
+    }
+    throw new Error('Scan timed out. Try lowering "Max Files to Scan" and scan again.');
   };
 
   return (
