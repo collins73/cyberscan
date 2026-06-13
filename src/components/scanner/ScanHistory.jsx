@@ -95,39 +95,15 @@ export default function ScanHistory({ scans, onViewScan, onArchiveScan, onDelete
                   </div>
                 </div>
                 <div className="flex items-center gap-2 flex-shrink-0">
-                  <div className="flex items-center gap-2 flex-shrink-0">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => onViewScan(scan)}
-                      className="border-cyan-500/30 text-cyan-400 hover:bg-cyan-500/10 hover:text-cyan-300"
-                    >
-                      <Eye className="w-4 h-4 mr-2" />
-                      View
-                    </Button>
-                    {onArchiveScan && (
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => onArchiveScan(scan)}
-                        title="Archive scan"
-                        className="text-slate-400 hover:text-yellow-400 hover:bg-yellow-500/10"
-                      >
-                        <Archive className="w-4 h-4" />
-                      </Button>
-                    )}
-                    {onDeleteScan && (
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => setScanToDelete(scan)}
-                        title="Delete scan"
-                        className="text-slate-400 hover:text-red-400 hover:bg-red-500/10"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </Button>
-                    )}
-                  </div>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => onViewScan(scan)}
+                    className="border-cyan-500/30 text-cyan-400 hover:bg-cyan-500/10 hover:text-cyan-300"
+                  >
+                    <Eye className="w-4 h-4 mr-2" />
+                    View
+                  </Button>
                   {onArchiveScan && (
                     <Button
                       variant="ghost"
