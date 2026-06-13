@@ -16,29 +16,26 @@ export default function PRIntegration() {
   const [isRunning, setIsRunning] = useState(false);
 
   const { data: configs = [], isLoading } = useQuery({
-    queryKey: ['codeScans'],
-    queryFn: () => base44.entities.CodeScan.list('-created_date'),
+    queryKey: ['watchedRepos'],
+    queryFn: () => base44.entities.WatchedRepo.list('-created_date'),
   });
 
   const addMutation = useMutation({
-    mutationFn: (repo) => {
-      // Store repo config as scan metadata (placeholder for now)
-      return Promise.resolve({ success: true });
+    mutationFn: (repo) => base44.entities.WatchedRepo.create({ repo_full_name: repo, enabled: true }),
+    onSuccess: () => {
+      setNewRepo('');
+      queryClient.invalidateQueries({ queryKey: ['watchedRepos'] });
     },
-    onSuccess: () => { setNewRepo(''); },
   });
 
   const deleteMutation = useMutation({
-    mutationFn: (id) => base44.entities.CodeScan.delete(id),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['codeScans'] }),
+    mutationFn: (id) => base44.entities.WatchedRepo.delete(id),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['watchedRepos'] }),
   });
 
   const toggleMutation = useMutation({
-    mutationFn: ({ id, enabled }) => {
-      // Toggle tracked repos (placeholder for now)
-      return Promise.resolve({ success: true });
-    },
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['codeScans'] }),
+    mutationFn: ({ id, enabled }) => base44.entities.WatchedRepo.update(id, { enabled: !enabled }),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['watchedRepos'] }),
   });
 
   const handleAdd = () => {
@@ -159,7 +156,7 @@ export default function PRIntegration() {
                       )}
                     </div>
                     <div className="flex items-center gap-2">
-                      <button onClick={() => toggleMutation.mutate({ id: config.id, enabled: !config.enabled })}>
+                      <button onClick={() => toggleMutation.mutate({ id: config.id, enabled: config.enabled })}>
                         {config.enabled
                           ? <Badge className="bg-emerald-500/20 text-emerald-400 border-emerald-500/30 cursor-pointer">Active</Badge>
                           : <Badge className="bg-slate-500/20 text-slate-400 border-slate-500/30 cursor-pointer">Paused</Badge>}

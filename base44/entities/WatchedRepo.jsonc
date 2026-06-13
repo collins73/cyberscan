@@ -1,0 +1,22 @@
+{
+  "name": "WatchedRepo",
+  "type": "object",
+  "properties": {
+    "repo_full_name": {
+      "type": "string",
+      "description": "GitHub repository in owner/repo format"
+    },
+    "enabled": {
+      "type": "boolean",
+      "default": true,
+      "description": "Whether this repo is actively watched for PR scanning"
+    },
+    "last_checked": {
+      "type": "string",
+      "description": "Timestamp of the last time PRs were checked"
+    }
+  },
+  "required": [
+    "repo_full_name"
+  ]
+}
