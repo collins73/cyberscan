@@ -20,20 +20,30 @@ export default function CodeInput({ onScanStart }) {
   const [inputMode, setInputMode] = useState('paste'); // 'paste' | 'upload'
   const [selectedProjectId, setSelectedProjectId] = useState('');
   const [selectedModel, setSelectedModel] = useState('automatic');
+  const [isDragging, setIsDragging] = useState(false);
 
   const { data: projects = [] } = useQuery({
     queryKey: ['projects'],
     queryFn: () => base44.entities.Project.list('-created_date', 100)
   });
 
+  const readFile = (selectedFile) => {
+    if (!selectedFile) return;
+    setFile(selectedFile);
+    const reader = new FileReader();
+    reader.onload = (event) => setCode(event.target.result || '');
+    reader.readAsText(selectedFile);
+  };
+
   const handleFileChange = (e) => {
-    const selectedFile = e.target.files[0];
-    if (selectedFile) {
-      setFile(selectedFile);
-      const reader = new FileReader();
-      reader.onload = (event) => setCode(event.target.result);
-      reader.readAsText(selectedFile);
-    }
+    readFile(e.target.files[0]);
+    e.target.value = ''; // allow re-selecting the same file
+  };
+
+  const handleDrop = (e) => {
+    e.preventDefault();
+    setIsDragging(false);
+    readFile(e.dataTransfer.files?.[0]);
   };
 
   const handleScan = () => {
@@ -92,14 +102,23 @@ export default function CodeInput({ onScanStart }) {
         {inputMode === 'upload' && (
           <motion.div
             initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.3 }}
-            className="border-2 border-dashed border-slate-700 rounded-lg p-12 text-center hover:border-cyan-500/50 transition-colors"
+            onDragOver={(e) => { e.preventDefault(); setIsDragging(true); }}
+            onDragLeave={() => setIsDragging(false)}
+            onDrop={handleDrop}
+            className={`border-2 border-dashed rounded-lg p-12 text-center transition-colors ${
+              isDragging ? 'border-cyan-500 bg-cyan-500/5' : 'border-slate-700 hover:border-cyan-500/50'
+            }`}
           >
             <input type="file" onChange={handleFileChange} className="hidden" id="file-upload"
               accept=".js,.jsx,.ts,.tsx,.py,.java,.cpp,.c,.go,.rb,.php,.html,.css" />
-            <label htmlFor="file-upload" className="cursor-pointer">
+            <label htmlFor="file-upload" className="cursor-pointer block">
               <Upload className="w-12 h-12 mx-auto mb-4 text-cyan-500" />
               <p className="text-slate-300 mb-2">{file ? file.name : 'Click to upload or drag and drop'}</p>
-              <p className="text-slate-500 text-sm">Supports: JS, TS, Python, Java, C++, Go, Ruby, PHP, HTML, CSS</p>
+              {file ? (
+                <p className="text-green-400 text-sm">Loaded {code.length.toLocaleString()} characters — ready to scan</p>
+              ) : (
+                <p className="text-slate-500 text-sm">Supports: JS, TS, Python, Java, C++, Go, Ruby, PHP, HTML, CSS</p>
+              )}
             </label>
           </motion.div>
         )}
