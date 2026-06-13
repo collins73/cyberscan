@@ -21,6 +21,7 @@ export default function CodeInput({ onScanStart }) {
   const [selectedProjectId, setSelectedProjectId] = useState('');
   const [selectedModel, setSelectedModel] = useState('automatic');
   const [isDragging, setIsDragging] = useState(false);
+  const [isReading, setIsReading] = useState(false);
 
   const { data: projects = [] } = useQuery({
     queryKey: ['projects'],
@@ -30,8 +31,17 @@ export default function CodeInput({ onScanStart }) {
   const readFile = (selectedFile) => {
     if (!selectedFile) return;
     setFile(selectedFile);
+    setIsReading(true);
+    setCode('');
     const reader = new FileReader();
-    reader.onload = (event) => setCode(event.target.result || '');
+    reader.onload = (event) => {
+      setCode(event.target.result || '');
+      setIsReading(false);
+    };
+    reader.onerror = () => {
+      setIsReading(false);
+      alert('Could not read this file. Please upload a plain text/source file.');
+    };
     reader.readAsText(selectedFile);
   };
 
@@ -116,7 +126,9 @@ export default function CodeInput({ onScanStart }) {
             <label htmlFor="file-upload" className="cursor-pointer block">
               <Upload className="w-12 h-12 mx-auto mb-4 text-cyan-500" />
               <p className="text-slate-300 mb-2">{file ? file.name : 'Click to upload or drag and drop'}</p>
-              {file ? (
+              {isReading ? (
+                <p className="text-cyan-400 text-sm">Reading file…</p>
+              ) : file ? (
                 <p className="text-green-400 text-sm">Loaded {code.length.toLocaleString()} characters — ready to scan</p>
               ) : (
                 <p className="text-slate-500 text-sm">Supports: JS, TS, Python, Java, C++, Go, Ruby, PHP, HTML, CSS</p>
@@ -172,11 +184,11 @@ export default function CodeInput({ onScanStart }) {
         <div className="mt-6 flex justify-end">
           <Button
             onClick={handleScan}
-            disabled={!code.trim()}
+            disabled={!code.trim() || isReading}
             className="bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600 text-black font-bold px-8 py-6 text-lg disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <Scan className="w-5 h-5 mr-2" />
-            Initiate Security Scan
+            {isReading ? 'Reading file…' : 'Initiate Security Scan'}
           </Button>
         </div>
       </div>
