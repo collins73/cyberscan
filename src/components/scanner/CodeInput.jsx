@@ -1,10 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { base44 } from '@/api/base44Client';
 import { useQuery } from '@tanstack/react-query';
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { Upload, Code, Scan, FolderOpen, Bot } from "lucide-react";
+import { Upload, Code, Scan, FolderOpen, Bot, CheckCircle, XCircle } from "lucide-react";
 import { motion } from "framer-motion";
 
 const MODELS = [
@@ -14,51 +14,87 @@ const MODELS = [
   { value: 'gpt_5', label: 'GPT-5', description: 'High quality · more credits' },
 ];
 
+const ACCEPTED_EXTENSIONS = '.js,.jsx,.ts,.tsx,.py,.java,.cpp,.c,.go,.rb,.php,.html,.css,.json,.yaml,.yml,.sh,.sql,.swift,.kt,.rs';
+
 export default function CodeInput({ onScanStart }) {
   const [code, setCode] = useState('');
   const [file, setFile] = useState(null);
-  const [inputMode, setInputMode] = useState('paste'); // 'paste' | 'upload'
+  const [inputMode, setInputMode] = useState('paste');
   const [selectedProjectId, setSelectedProjectId] = useState('');
   const [selectedModel, setSelectedModel] = useState('automatic');
   const [isDragging, setIsDragging] = useState(false);
   const [isReading, setIsReading] = useState(false);
+  const [readError, setReadError] = useState('');
+  const fileInputRef = useRef(null);
 
   const { data: projects = [] } = useQuery({
     queryKey: ['projects'],
     queryFn: () => base44.entities.Project.list('-created_date', 100)
   });
 
-  const readFile = (selectedFile) => {
+  const readFileContents = (selectedFile) => {
     if (!selectedFile) return;
+    setReadError('');
     setFile(selectedFile);
     setIsReading(true);
     setCode('');
+
     const reader = new FileReader();
-    reader.onload = (event) => {
-      setCode(event.target.result || '');
+    reader.onload = (e) => {
+      const result = e.target?.result;
+      if (typeof result === 'string' && result.trim().length > 0) {
+        setCode(result);
+      } else {
+        setReadError('File appears to be empty or unreadable. Please try a different file.');
+      }
       setIsReading(false);
     };
     reader.onerror = () => {
+      setReadError('Failed to read file. Make sure it is a plain text or source code file.');
       setIsReading(false);
-      alert('Could not read this file. Please upload a plain text/source file.');
     };
     reader.readAsText(selectedFile);
   };
 
-  const handleFileChange = (e) => {
-    readFile(e.target.files[0]);
-    e.target.value = ''; // allow re-selecting the same file
+  const handleFileInputChange = (e) => {
+    const selected = e.target.files?.[0];
+    if (selected) readFileContents(selected);
+    // Reset so same file can be re-selected
+    e.target.value = '';
+  };
+
+  const handleUploadClick = () => {
+    fileInputRef.current?.click();
+  };
+
+  const handleDragOver = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(true);
+  };
+
+  const handleDragLeave = (e) => {
+    e.preventDefault();
+    setIsDragging(false);
   };
 
   const handleDrop = (e) => {
     e.preventDefault();
+    e.stopPropagation();
     setIsDragging(false);
-    readFile(e.dataTransfer.files?.[0]);
+    const dropped = e.dataTransfer.files?.[0];
+    if (dropped) readFileContents(dropped);
+  };
+
+  const handleClearFile = () => {
+    setFile(null);
+    setCode('');
+    setReadError('');
   };
 
   const handleScan = () => {
     if (!code.trim()) {
-      alert('No code to scan. If you uploaded a file, make sure it is a readable text/source file and wait for it to load.');
+      alert('No code to scan. Please paste code or upload a source file first.');
       return;
     }
     const selectedProject = projects.find(p => p.id === selectedProjectId);
@@ -74,9 +110,10 @@ export default function CodeInput({ onScanStart }) {
   return (
     <Card className="bg-gradient-to-br from-slate-900 to-slate-800 border-cyan-500/20 overflow-hidden">
       <div className="p-8">
-        {/* Mode Selector */}
+        {/* Mode Toggle */}
         <div className="flex gap-3 mb-6">
           <Button
+            type="button"
             variant={inputMode === 'paste' ? 'default' : 'outline'}
             onClick={() => setInputMode('paste')}
             className={inputMode === 'paste'
@@ -87,6 +124,7 @@ export default function CodeInput({ onScanStart }) {
             Paste Code
           </Button>
           <Button
+            type="button"
             variant={inputMode === 'upload' ? 'default' : 'outline'}
             onClick={() => setInputMode('upload')}
             className={inputMode === 'upload'
@@ -100,7 +138,7 @@ export default function CodeInput({ onScanStart }) {
 
         {/* Paste Mode */}
         {inputMode === 'paste' && (
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.3 }}>
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
             <Textarea
               value={code}
               onChange={(e) => setCode(e.target.value)}
@@ -112,36 +150,74 @@ export default function CodeInput({ onScanStart }) {
 
         {/* Upload Mode */}
         {inputMode === 'upload' && (
-          <motion.div
-            initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.3 }}
-            onDragOver={(e) => { e.preventDefault(); setIsDragging(true); }}
-            onDragLeave={() => setIsDragging(false)}
-            onDrop={handleDrop}
-            className={`border-2 border-dashed rounded-lg p-12 text-center transition-colors ${
-              isDragging ? 'border-cyan-500 bg-cyan-500/5' : 'border-slate-700 hover:border-cyan-500/50'
-            }`}
-          >
-            <input type="file" onChange={handleFileChange} className="hidden" id="file-upload"
-              accept=".js,.jsx,.ts,.tsx,.py,.java,.cpp,.c,.go,.rb,.php,.html,.css" />
-            <label htmlFor="file-upload" className="cursor-pointer block">
-              <Upload className="w-12 h-12 mx-auto mb-4 text-cyan-500" />
-              <p className="text-slate-300 mb-2">{file ? file.name : 'Click to upload or drag and drop'}</p>
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+            {/* Hidden real file input */}
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept={ACCEPTED_EXTENSIONS}
+              onChange={handleFileInputChange}
+              className="hidden"
+              aria-label="Upload source file"
+            />
+
+            {/* Drop zone */}
+            <div
+              onDragOver={handleDragOver}
+              onDragLeave={handleDragLeave}
+              onDrop={handleDrop}
+              onClick={handleUploadClick}
+              className={`border-2 border-dashed rounded-xl p-12 text-center cursor-pointer transition-all select-none ${
+                isDragging
+                  ? 'border-cyan-500 bg-cyan-500/10 scale-[1.01]'
+                  : file && !readError
+                  ? 'border-green-500/50 bg-green-500/5'
+                  : readError
+                  ? 'border-red-500/50 bg-red-500/5'
+                  : 'border-slate-700 hover:border-cyan-500/60 hover:bg-slate-800/60'
+              }`}
+            >
               {isReading ? (
-                <p className="text-cyan-400 text-sm">Reading file…</p>
+                <>
+                  <div className="w-10 h-10 border-2 border-cyan-500 border-t-transparent rounded-full animate-spin mx-auto mb-3" />
+                  <p className="text-cyan-400 font-medium">Reading file…</p>
+                </>
+              ) : readError ? (
+                <>
+                  <XCircle className="w-12 h-12 mx-auto mb-3 text-red-400" />
+                  <p className="text-red-400 font-medium mb-1">Could not read file</p>
+                  <p className="text-slate-500 text-sm mb-4">{readError}</p>
+                  <Button type="button" size="sm" onClick={(e) => { e.stopPropagation(); handleClearFile(); }}
+                    className="bg-slate-700 hover:bg-slate-600 text-white text-xs">
+                    Try another file
+                  </Button>
+                </>
               ) : file ? (
-                <p className="text-green-400 text-sm">Loaded {code.length.toLocaleString()} characters — ready to scan</p>
+                <>
+                  <CheckCircle className="w-12 h-12 mx-auto mb-3 text-green-400" />
+                  <p className="text-green-400 font-semibold mb-1">{file.name}</p>
+                  <p className="text-slate-400 text-sm">{code.length.toLocaleString()} characters loaded — ready to scan</p>
+                  <button type="button" onClick={(e) => { e.stopPropagation(); handleClearFile(); }}
+                    className="mt-3 text-slate-500 text-xs underline hover:text-slate-300">
+                    Remove file
+                  </button>
+                </>
               ) : (
-                <p className="text-slate-500 text-sm">Supports: JS, TS, Python, Java, C++, Go, Ruby, PHP, HTML, CSS</p>
+                <>
+                  <Upload className="w-12 h-12 mx-auto mb-4 text-cyan-500" />
+                  <p className="text-slate-200 font-medium mb-1">Click to upload or drag & drop</p>
+                  <p className="text-slate-500 text-sm">JS, TS, Python, Java, Go, Ruby, PHP, C/C++, Swift, Rust, SQL, YAML, HTML, CSS</p>
+                </>
               )}
-            </label>
+            </div>
           </motion.div>
         )}
 
         {/* Project Selector */}
-        <div className="mt-4">
+        <div className="mt-5">
           <div className="flex items-center gap-2 mb-1.5">
             <FolderOpen className="w-3.5 h-3.5 text-violet-400" />
-            <label className="text-slate-400 text-xs uppercase">Assign to Project (optional)</label>
+            <label className="text-slate-400 text-xs uppercase tracking-wide">Assign to Project (optional)</label>
           </div>
           <select
             value={selectedProjectId}
@@ -159,7 +235,7 @@ export default function CodeInput({ onScanStart }) {
         <div className="mt-4">
           <div className="flex items-center gap-2 mb-1.5">
             <Bot className="w-3.5 h-3.5 text-orange-400" />
-            <label className="text-slate-400 text-xs uppercase">AI Model</label>
+            <label className="text-slate-400 text-xs uppercase tracking-wide">AI Model</label>
           </div>
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
             {MODELS.map(m => (
@@ -183,6 +259,7 @@ export default function CodeInput({ onScanStart }) {
         {/* Scan Button */}
         <div className="mt-6 flex justify-end">
           <Button
+            type="button"
             onClick={handleScan}
             disabled={!code.trim() || isReading}
             className="bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600 text-black font-bold px-8 py-6 text-lg disabled:opacity-50 disabled:cursor-not-allowed"
