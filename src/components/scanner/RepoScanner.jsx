@@ -16,10 +16,10 @@ const MODELS = [
 
 export default function RepoScanner({ onScanComplete, onScanStart }) {
   const [repoUrl, setRepoUrl] = useState('');
-  const [branch, setBranch] = useState('main');
+  const [branch, setBranch] = useState('');
   const [selectedProjectId, setSelectedProjectId] = useState('');
   const [selectedModel, setSelectedModel] = useState('automatic');
-  const [maxFiles, setMaxFiles] = useState(30);
+  const [maxFiles, setMaxFiles] = useState(15);
   const [isScanning, setIsScanning] = useState(false);
   const [progress, setProgress] = useState('');
 
@@ -37,10 +37,10 @@ export default function RepoScanner({ onScanComplete, onScanStart }) {
     const selectedProject = projects.find(p => p.id === selectedProjectId);
 
     try {
-      setProgress('Connecting to GitHub repository...');
+      setProgress(`Scanning up to ${maxFiles} files — this can take 1–2 minutes for larger repos...`);
       const response = await base44.functions.invoke('scanRepository', {
         repoUrl: repoUrl.trim(),
-        branch: branch.trim() || 'main',
+        branch: branch.trim() || null,
         projectId: selectedProjectId || null,
         projectName: selectedProject?.name || null,
         maxFiles,
@@ -49,7 +49,12 @@ export default function RepoScanner({ onScanComplete, onScanStart }) {
 
       onScanComplete?.(response.data.scan, response.data);
     } catch (error) {
-      const msg = error.response?.data?.error || error.message || 'Unknown server error';
+      const status = error.response?.status;
+      let msg = error.response?.data?.error || error.message || 'Unknown server error';
+      // A timeout / network abort usually means the scan is still running but the browser gave up
+      if (!error.response || status === 504 || /timeout|network|aborted/i.test(msg)) {
+        msg = 'The scan took too long and the connection timed out. Try lowering "Max Files to Scan" to 10–15 and scan again.';
+      }
       alert(`Repository scan failed: ${msg}`);
       console.error('scanRepository error:', error);
     } finally {
@@ -103,7 +108,7 @@ export default function RepoScanner({ onScanComplete, onScanStart }) {
             <Input
               value={branch}
               onChange={e => setBranch(e.target.value)}
-              placeholder="main"
+              placeholder="auto-detect (default branch)"
               className="bg-slate-950 border-slate-700 text-slate-100 focus:border-cyan-500"
             />
           </div>
