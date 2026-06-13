@@ -47,16 +47,18 @@ export default function CodeInput({ onScanStart }) {
   };
 
   const handleScan = () => {
-    if (code.trim()) {
-      const selectedProject = projects.find(p => p.id === selectedProjectId);
-      onScanStart({
-        code,
-        fileName: file ? file.name : 'Manual Input',
-        projectId: selectedProjectId || null,
-        projectName: selectedProject?.name || null,
-        model: selectedModel === 'automatic' ? null : selectedModel
-      });
+    if (!code.trim()) {
+      alert('No code to scan. If you uploaded a file, make sure it is a readable text/source file and wait for it to load.');
+      return;
     }
+    const selectedProject = projects.find(p => p.id === selectedProjectId);
+    onScanStart({
+      code,
+      fileName: file ? file.name : 'Manual Input',
+      projectId: selectedProjectId || null,
+      projectName: selectedProject?.name || null,
+      model: selectedModel === 'automatic' ? null : selectedModel
+    });
   };
 
   return (
