@@ -1,12 +1,50 @@
-# 🛡️ CodeGuard — AI-Powered Security Analysis Platform
+# 🛡️ CodeGuard — Application Security Code as a Service (AsCaaS)
 
-CodeGuard is a focused AI-driven security platform that helps developers and security teams identify, analyze, and track code vulnerabilities. It provides three core modules accessible from a unified navigation bar.
+> **Scan. Fix. Ship. Secure.**
+
+CodeGuard is an AI-powered **Application Security Code as a Service (AsCaaS)** platform that eliminates the gap between finding vulnerabilities and fixing them. Connect your GitHub repo or paste code — CodeGuard detects the threats, generates the patch, and opens a Pull Request automatically. No manual remediation. No context switching.
+
+Built for developers who move fast and security teams who need to keep up.
+
+🔗 **Live App:** https://cyber-security-code-scan.base44.app
+
+---
+
+## ⚡ The AsCaaS Workflow
+
+```
+Connect Repo / Paste Code
+        ↓
+  AI Scans for 20+ Vulnerability Types
+        ↓
+  Severity-Rated Findings (Critical → Low)
+        ↓
+  Auto-Fix: AI Patches Code → GitHub PR Opened
+        ↓
+  Track, Monitor & Report Security Posture
+```
+
+No manual patching. No switching tools. Just: **Scan → Fix → PR. Done.**
 
 ---
 
 ## 🚀 Core Features
 
-### 📊 Analytics Dashboard (Home)
+### 🔍 AI Code Scanner
+- Paste code, upload a file, or connect a GitHub repository for full codebase scanning
+- Detects **20+ vulnerability types**: SQL Injection, XSS, RCE, SSRF, Command Injection, Hardcoded Secrets, Broken Auth, Path Traversal, XXE, IDOR, and more
+- OWASP Top 10 coverage with real-world threat intelligence enrichment
+- Severity-rated findings (Critical / High / Medium / Low) with line numbers and secure fix examples
+- Choose your AI model: GPT-4o-mini, Claude Sonnet, Claude Opus, or GPT-5
+- Auto-creates security alerts for critical and high findings
+
+### 🤖 Auto-Fix via GitHub PR
+- One click generates an AI-patched pull request directly to your repository
+- LLM rewrites the vulnerable file with all selected fixes applied
+- Specify the exact file path, branch, and vulnerabilities to target
+- PR is opened on GitHub with a full summary of changes made
+
+### 📊 Analytics Dashboard
 - Full vulnerability metrics with trend charts, severity distribution, and language breakdowns
 - Customizable widget layout — show/hide any panel
 - Vulnerability Density Heatmap to visualize risk concentration across files
@@ -18,83 +56,124 @@ CodeGuard is a focused AI-driven security platform that helps developers and sec
 - Correlates scan findings with known CVEs from NIST NVD
 - Tracks threat actors, attack patterns, and active campaigns
 - Risk prioritization across all scans
-- Provides exploitability metrics and prevalence data per vulnerability
+- Provides exploitability metrics and prevalence data per vulnerability type
 
-### 🏗️ Monitoring
-- Track deployed applications across development, staging, and production environments
-- Automatic security health checks that correlate deployments with scan results
+### 🔴 Red Team Simulation
+- Simulate real-world attack scenarios across your full vulnerability history
+- Filter by severity and status
+- Test exploit paths and mark findings as remediated
+
+### 🏗️ Monitoring & CI/CD
+- Track deployed applications across development, staging, and production
+- Automatic security health checks correlated with scan results
 - Security alerts for at-risk deployments
 - CI/CD integration guides (GitHub Actions, GitLab CI, Jenkins)
 
-### 🔍 AI Code Scanner (via Analytics)
-- Detects **20+ vulnerability types** including SQL Injection, XSS, RCE, SSRF, hardcoded secrets, and more
-- AI-powered analysis with real-world threat intelligence enrichment
-- Severity-rated findings (Critical / High / Medium / Low) with line numbers and secure fix examples
-- Auto-creates security alerts for critical and high findings
+### 🛡️ Policy Engine
+- Define org-wide security rules and enforce them across every repo
+- Generate compliance reports for SOC 2, ISO 27001, and PCI DSS
+- Evaluate code against custom security policies
+
+### 🔄 PR Integration
+- Auto-scan pull requests as they're opened
+- Vulnerability summary comments posted directly on PRs
+- Watch multiple repositories simultaneously
+
+### 📅 Scheduled Scans
+- Schedule recurring security scans on any repository
+- Stay ahead of new vulnerabilities with automated monitoring
 
 ---
 
 ## 🖥️ How to Use
 
-### Navigation
-All pages are accessible from the top navigation bar:
-- **Analytics** — your main security dashboard
-- **Threat Intel** — CVE correlation and threat landscape
-- **Monitoring** — deployment health and alerts
-
 ### Running a Scan
-1. Go to **Analytics** and click **Start Scanning** (if no data yet)
-2. Paste code or upload a file, then click **Scan for Vulnerabilities**
-3. Review findings with recommendations and secure code examples
-4. Return to **Analytics** to see metrics update in real-time
+1. Go to **Scanner** in the nav bar
+2. Choose **Paste Code**, **Upload File**, or **Scan Repository**
+3. Select an AI model (Auto is recommended for most scans)
+4. Click **Initiate Security Scan**
+5. Review findings — each vulnerability includes a severity rating, description, and secure fix example
 
-### Viewing Threat Intelligence
-1. Click **Threat Intel** in the nav bar
-2. Explore risk prioritization, CVE correlation, threat actors, and landscape analysis
+### Auto-Fixing a Vulnerability
+1. After scanning, click **Auto-Fix** in the scan results
+2. Enter your GitHub repo (`owner/repo-name`)
+3. Enter the **full file path** within the repo (e.g. `src/utils/auth.js`)
+4. Paste the full file content
+5. Select the vulnerabilities to fix
+6. Click **Generate Fix & Open Pull Request**
+7. Review and merge the PR on GitHub
 
-### Monitoring Deployments
-1. Click **Monitoring** in the nav bar
-2. Add deployed applications with environment and version info
-3. Run security health checks to assess deployment risk
+### PR Integration
+1. Go to **PR Integration** in the nav bar
+2. Add a repository in `owner/repo` format
+3. Open PRs will be automatically scanned and commented on
 
 ---
 
 ## 🧰 Tech Stack
 
-- **Frontend:** React, Tailwind CSS, Framer Motion, Recharts, shadcn/ui
-- **Backend:** Base44 serverless functions (Deno)
-- **AI Engine:** LLM-based vulnerability analysis with internet-augmented threat intelligence
-- **Database:** Base44 managed entity store
-- **Integrations:** GitHub API
+| Layer | Technology |
+|---|---|
+| Frontend | React, Tailwind CSS, Framer Motion, Recharts, shadcn/ui |
+| Backend | Base44 serverless functions (Deno runtime) |
+| AI Engine | Multi-model LLM (GPT-4o-mini, Claude Sonnet/Opus, GPT-5) |
+| Database | Base44 managed entity store |
+| Integrations | GitHub API (OAuth + PAT) |
 
 ---
 
 ## 📁 Project Structure
 
 ```
-pages/
-  Landing.jsx          — Marketing landing page
-  Analytics.jsx        — Main security metrics dashboard
-  ThreatIntel.jsx      — Threat intelligence center
-  Monitoring.jsx       — Deployment monitoring & alerts
-  Scanner.jsx          — AI code vulnerability scanner
+src/
+  pages/
+    Landing.jsx          — AsCaaS marketing landing page
+    Scanner.jsx          — AI code vulnerability scanner
+    Analytics.jsx        — Security metrics dashboard
+    ThreatIntel.jsx      — Threat intelligence center
+    Monitoring.jsx       — Deployment monitoring & alerts
+    RedTeam.jsx          — Red team simulation
+    PolicyEngine.jsx     — Security policy management
+    PRIntegration.jsx    — GitHub PR auto-scanning
+    AlertsDashboard.jsx  — Active security alerts
+    Projects.jsx         — Project management
 
-components/
-  AppNav.jsx           — Shared navigation bar
-  analytics/           — Dashboard widgets
-  threatintel/         — Threat intelligence components
-  monitoring/          — Monitoring components
-  scanner/             — Scanner components
+  components/
+    scanner/
+      CodeInput.jsx           — Paste / upload / repo scan input
+      ScanResults.jsx         — Vulnerability results display
+      AutoFixModal.jsx        — GitHub PR auto-fix flow
+      VulnerabilityCard.jsx   — Individual finding card
+      VulnerabilityDetailModal.jsx — Full finding detail + CVE search
+      ScanHistory.jsx         — Past scan history
+      RepoScanner.jsx         — Repository-level scan UI
+      ScheduleManager.jsx     — Scheduled scan management
+    analytics/               — Dashboard chart widgets
+    threatintel/             — Threat intelligence components
+    monitoring/              — Deployment monitoring components
+    policy/                  — Policy editor and evaluator
+    redteam/                 — Red team simulation components
+    reports/                 — Report generator
+    remediation/             — AI remediation assistant
 
-functions/
-  prSecurityScan.js    — GitHub PR polling and AI scan bot
-  threatIntelligence.js — Threat intelligence backend
+base44/
+  functions/
+    autoFixPR/       — LLM patch generation + GitHub PR creation
+    scanRepository/  — Full repo traversal and scan
+    prSecurityScan/  — GitHub PR polling and AI scan bot
+    threatIntelligence/ — Threat intel backend
+    fetchRepoFile/   — GitHub file content fetcher
+    createReadme/    — README generator
 
-entities/
-  CodeScan             — Scan results storage
-  VulnerabilityMetric  — Aggregated vulnerability metrics
-  DeployedApplication  — Monitored deployments
-  SecurityAlert        — Active security alerts
+  entities/
+    CodeScan             — Scan results storage
+    VulnerabilityMetric  — Aggregated vulnerability metrics
+    DeployedApplication  — Monitored deployments
+    SecurityAlert        — Active security alerts
+    WatchedRepo          — PR integration watched repositories
+    Project              — Project grouping
+    SecurityPolicy       — Custom security policies
+    ScheduledScan        — Scheduled scan configurations
 ```
 
 ---
@@ -103,14 +182,24 @@ entities/
 
 | Variable | Description |
 |---|---|
-| `GITHUB_TOKEN` | GitHub Personal Access Token — required for PR scanning |
+| `GITHUB_TOKEN` | GitHub Personal Access Token (classic, `repo` scope) — required for PR scanning and Auto-Fix |
 
 ---
 
-## 📬 Support
+## 🎯 Who It's For
+
+- **Developers** — catch vulnerabilities before they hit production, auto-fix in one click
+- **Engineering Leads** — enforce security standards across all repos with policy engine
+- **CISOs / Security Teams** — compliance reporting, threat intelligence, red team simulation, full audit trail
+
+---
+
+## 📬 Support & Contributing
 
 For issues or contributions, open an issue or pull request in this repository.
 
 ---
 
-*Built with ❤️ using [Base44](https://base44.com) — AI-powered app development platform.*
+*Built with ⚡ using [Base44](https://base44.com) — AI-powered app development platform.*
+
+*CodeGuard is part of the [RebelAgents.ai](https://rebelauto-diagnostics-ai.com) portfolio of autonomous AI agents.*
