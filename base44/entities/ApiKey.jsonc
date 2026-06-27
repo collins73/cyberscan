@@ -1,0 +1,30 @@
+{
+  "name": "ApiKey",
+  "type": "object",
+  "properties": {
+    "key_hash": {
+      "type": "string",
+      "description": "SHA-256 hash of the API key"
+    },
+    "name": {
+      "type": "string",
+      "description": "Human-readable key name"
+    },
+    "owner_email": {
+      "type": "string",
+      "description": "Email of the key owner"
+    },
+    "tier": {
+      "type": "string",
+      "description": "Pricing tier name (Free, Pro, Enterprise)"
+    },
+    "is_active": {
+      "type": "boolean",
+      "description": "Whether the key is active"
+    },
+    "last_used_at": {
+      "type": "string",
+      "description": "ISO timestamp of last usage"
+    }
+  }
+}

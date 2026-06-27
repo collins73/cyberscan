@@ -1,0 +1,26 @@
+{
+  "name": "PricingTier",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Tier name (Free, Pro, Enterprise)"
+    },
+    "price_monthly": {
+      "type": "number",
+      "description": "Monthly price in USD"
+    },
+    "scan_limit_daily": {
+      "type": "number",
+      "description": "Max scans per day for this tier"
+    },
+    "is_rebelagents_bundle": {
+      "type": "boolean",
+      "description": "Whether this tier is included in RebelAgents subscription"
+    },
+    "description": {
+      "type": "string",
+      "description": "Tier description"
+    }
+  }
+}

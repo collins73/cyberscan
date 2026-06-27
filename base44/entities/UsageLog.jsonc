@@ -1,0 +1,22 @@
+{
+  "name": "UsageLog",
+  "type": "object",
+  "properties": {
+    "api_key_id": {
+      "type": "string",
+      "description": "ID of the ApiKey"
+    },
+    "scan_id": {
+      "type": "string",
+      "description": "ID of the related ScanRecord"
+    },
+    "endpoint": {
+      "type": "string",
+      "description": "API endpoint called"
+    },
+    "response_status": {
+      "type": "number",
+      "description": "HTTP response status code"
+    }
+  }
+}

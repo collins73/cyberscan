@@ -1,0 +1,44 @@
+{
+  "name": "ScanRecord",
+  "type": "object",
+  "properties": {
+    "scan_id": {
+      "type": "string",
+      "description": "Unique scan identifier"
+    },
+    "api_key_id": {
+      "type": "string",
+      "description": "ID of the ApiKey that initiated the scan"
+    },
+    "scan_type": {
+      "type": "string",
+      "enum": [
+        "snippet",
+        "repository"
+      ],
+      "description": "Type of scan"
+    },
+    "target_identifier": {
+      "type": "string",
+      "description": "Code hash or repo URL"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "queued",
+        "scanning",
+        "completed",
+        "failed"
+      ],
+      "description": "Current scan status"
+    },
+    "summary": {
+      "type": "string",
+      "description": "JSON string of scan results"
+    },
+    "completed_at": {
+      "type": "string",
+      "description": "ISO timestamp of completion"
+    }
+  }
+}
