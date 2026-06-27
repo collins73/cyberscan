@@ -1,0 +1,116 @@
+name: 'CodeGuard Security Scan'
+description: 'Scan your code for security vulnerabilities using CodeGuard API'
+branding:
+  icon: 'shield'
+  color: 'purple'
+
+inputs:
+  api_key:
+    description: 'Your CodeGuard API key'
+    required: true
+  scan_type:
+    description: 'Type of scan: code or repository'
+    required: false
+    default: 'repository'
+  fail_on_critical:
+    description: 'Fail the build if critical vulnerabilities are found'
+    required: false
+    default: 'true'
+  fail_on_high:
+    description: 'Fail the build if high severity vulnerabilities are found'
+    required: false
+    default: 'false'
+
+outputs:
+  scan_id:
+    description: 'The scan ID for reference'
+  total_vulnerabilities:
+    description: 'Total number of vulnerabilities found'
+  critical_count:
+    description: 'Number of critical vulnerabilities'
+  high_count:
+    description: 'Number of high vulnerabilities'
+  report_url:
+    description: 'URL to the full scan report'
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Run CodeGuard Scan
+      shell: bash
+      env:
+        CODEGUARD_API_KEY: ${{ inputs.api_key }}
+        SCAN_TYPE: ${{ inputs.scan_type }}
+        FAIL_ON_CRITICAL: ${{ inputs.fail_on_critical }}
+        FAIL_ON_HIGH: ${{ inputs.fail_on_high }}
+      run: |
+        echo "🛡️ CodeGuard Security Scan"
+        echo "========================="
+        
+        REPO_URL="https://github.com/${{ github.repository }}"
+        BRANCH="${{ github.head_ref || github.ref_name }}"
+        
+        echo "📦 Scanning: $REPO_URL (branch: $BRANCH)"
+        
+        RESPONSE=$(curl -s -X POST \
+          "https://cyber-security-code-scan.base44.app/functions/scanRepositoryApi" \
+          -H "Authorization: Bearer $CODEGUARD_API_KEY" \
+          -H "Content-Type: application/json" \
+          -d "{\"repo_url\": \"$REPO_URL\", \"branch\": \"$BRANCH\"}")
+        
+        echo "$RESPONSE" | python3 -c "
+        import json, sys
+        data = json.load(sys.stdin)
+        
+        if 'error_code' in data:
+            print(f'❌ Scan failed: {data.get(\"message\", \"Unknown error\")}')
+            sys.exit(1)
+        
+        r = data.get('results', {})
+        scan_id = data.get('scan_id', 'unknown')
+        total = r.get('total_vulnerabilities', 0)
+        critical = r.get('critical', 0)
+        high = r.get('high', 0)
+        medium = r.get('medium', 0)
+        files = r.get('files_scanned', 0)
+        
+        print(f'')
+        print(f'📊 Scan Results (ID: {scan_id})')
+        print(f'   Files scanned: {files}')
+        print(f'   Total vulnerabilities: {total}')
+        print(f'   🔴 Critical: {critical}')
+        print(f'   🟠 High: {high}')
+        print(f'   🟡 Medium: {medium}')
+        print(f'')
+        
+        vulns = r.get('vulnerabilities', [])
+        if vulns:
+            print(f'📋 Vulnerability Details:')
+            for v in vulns:
+                icon = '🔴' if v.get('severity') == 'CRITICAL' else '🟠' if v.get('severity') == 'HIGH' else '🟡'
+                print(f'   {icon} [{v.get(\"id\",\"\")}] {v.get(\"name\",\"\")} in {v.get(\"file\",\"unknown\")}')
+            print()
+        
+        # Set outputs
+        with open('${{ github.output }}' if '${{ github.output }}' else '/dev/null', 'a') as f:
+            f.write(f'scan_id={scan_id}\n')
+            f.write(f'total_vulnerabilities={total}\n')
+            f.write(f'critical_count={critical}\n')
+            f.write(f'high_count={high}\n')
+        
+        # Check failure conditions
+        import os
+        fail_critical = os.environ.get('FAIL_ON_CRITICAL', 'true').lower() == 'true'
+        fail_high = os.environ.get('FAIL_ON_HIGH', 'false').lower() == 'true'
+        
+        if fail_critical and critical > 0:
+            print(f'❌ Build FAILED: {critical} critical vulnerabilities found')
+            sys.exit(1)
+        elif fail_high and high > 0:
+            print(f'❌ Build FAILED: {high} high severity vulnerabilities found')
+            sys.exit(1)
+        elif total > 0:
+            print(f'⚠️  Build PASSED with {total} warnings')
+        else:
+            print(f'✅ Build PASSED — no vulnerabilities detected')
+        "
