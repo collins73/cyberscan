@@ -1,0 +1,22 @@
+# .github/workflows/security-scan.yml
+name: Security Scan
+
+on:
+  pull_request:
+    branches: [main, develop]
+  push:
+    branches: [main]
+
+jobs:
+  codeguard-scan:
+    runs-on: ubuntu-latest
+    name: CodeGuard Security Scan
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Run CodeGuard Scan
+        uses: rebelagents/codeguard-action@v1
+        with:
+          api_key: ${{ secrets.CODEGUARD_API_KEY }}
+          fail_on_critical: 'true'
+          fail_on_high: 'false'
