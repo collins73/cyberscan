@@ -1,205 +1,210 @@
-# 🛡️ CodeGuard — Application Security Code as a Service (AsCaaS)
+# 🛡️ CodeGuard — Security-as-a-Service API
 
-> **Scan. Fix. Ship. Secure.**
+**Automated security scanning for code, repositories, and APIs.**
 
-CodeGuard is an AI-powered **Application Security Code as a Service (AsCaaS)** platform that eliminates the gap between finding vulnerabilities and fixing them. Connect your GitHub repo or paste code — CodeGuard detects the threats, generates the patch, and opens a Pull Request automatically. No manual remediation. No context switching.
+CodeGuard is a Security-as-a-Service platform that helps developers find and fix vulnerabilities before they ship. Scan code snippets, entire GitHub repos, and API endpoints — then generate compliance reports for SOC 2, HIPAA, PCI DSS, and OWASP.
 
-Built for developers who move fast and security teams who need to keep up.
-
-🔗 **Live App:** https://cyber-security-code-scan.base44.app
+🔗 **Developer Portal:** [cyber-security-code-scan.base44.app](https://cyber-security-code-scan.base44.app)
+📖 **API Docs:** [View Full Documentation](https://cyber-security-code-scan.base44.app/functions/getApiDocs)
+⚡ **GitHub Action:** [CI/CD Integration](https://github.com/collins73/cyberscan/tree/main/github-action)
 
 ---
 
-## ⚡ The AsCaaS Workflow
+## 🚀 Quick Start
 
-```
-Connect Repo / Paste Code
-        ↓
-  AI Scans for 20+ Vulnerability Types
-        ↓
-  Severity-Rated Findings (Critical → Low)
-        ↓
-  Auto-Fix: AI Patches Code → GitHub PR Opened
-        ↓
-  Track, Monitor & Report Security Posture
+### 1. Get an API Key (Free)
+
+```bash
+curl -X POST https://cyber-security-code-scan.base44.app/functions/generateApiKey \
+  -H "Content-Type: application/json" \
+  -d '{"name": "My App", "owner_email": "dev@example.com", "tier": "Free"}'
 ```
 
-No manual patching. No switching tools. Just: **Scan → Fix → PR. Done.**
+### 2. Scan Your Code
+
+```bash
+curl -X POST https://cyber-security-code-scan.base44.app/functions/scanCodeApi \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "code": "const query = \"SELECT * FROM users WHERE id=\" + req.params.id;",
+    "language": "javascript"
+  }'
+```
+
+### 3. Get Results
+
+```json
+{
+  "scan_id": "scan_abc123",
+  "status": "completed",
+  "results": {
+    "total_vulnerabilities": 1,
+    "critical": 1,
+    "vulnerabilities": [
+      {
+        "id": "CWE-89",
+        "name": "SQL Injection",
+        "severity": "CRITICAL",
+        "recommendation": "Use parameterized queries instead of string concatenation"
+      }
+    ]
+  }
+}
+```
 
 ---
 
-## 🚀 Core Features
+## 📡 API Endpoints
 
-### 🔍 AI Code Scanner
-- Paste code, upload a file, or connect a GitHub repository for full codebase scanning
-- Detects **20+ vulnerability types**: SQL Injection, XSS, RCE, SSRF, Command Injection, Hardcoded Secrets, Broken Auth, Path Traversal, XXE, IDOR, and more
-- OWASP Top 10 coverage with real-world threat intelligence enrichment
-- Severity-rated findings (Critical / High / Medium / Low) with line numbers and secure fix examples
-- Choose your AI model: GPT-4o-mini, Claude Sonnet, Claude Opus, or GPT-5
-- Auto-creates security alerts for critical and high findings
+| Endpoint | Method | Auth | Description |
+|---|---|---|---|
+| `/generateApiKey` | POST | ❌ | Generate a new API key |
+| `/scanCodeApi` | POST | ✅ | Scan a code snippet (8 CWE checks) |
+| `/scanRepositoryApi` | POST | ✅ | Scan a GitHub repository (12 languages) |
+| `/scanApiSecurity` | POST | ✅ | OWASP API Security Top 10 (2023) |
+| `/generateComplianceReport` | POST | ✅ | SOC 2, HIPAA, PCI DSS, OWASP reports |
+| `/getScanResults` | POST | ✅ | Retrieve a specific scan |
+| `/listScans` | GET | ✅ | List all scans (paginated) |
 
-### 🤖 Auto-Fix via GitHub PR
-- One click generates an AI-patched pull request directly to your repository
-- LLM rewrites the vulnerable file with all selected fixes applied
-- Specify the exact file path, branch, and vulnerabilities to target
-- PR is opened on GitHub with a full summary of changes made
-
-### 📊 Analytics Dashboard
-- Full vulnerability metrics with trend charts, severity distribution, and language breakdowns
-- Customizable widget layout — show/hide any panel
-- Vulnerability Density Heatmap to visualize risk concentration across files
-- Security score history over time
-- Export comprehensive security reports in **PDF** or **CSV** format
-- Time range filtering (7d / 30d / 90d / All)
-
-### 🌐 Threat Intelligence
-- Correlates scan findings with known CVEs from NIST NVD
-- Tracks threat actors, attack patterns, and active campaigns
-- Risk prioritization across all scans
-- Provides exploitability metrics and prevalence data per vulnerability type
-
-### 🔴 Red Team Simulation
-- Simulate real-world attack scenarios across your full vulnerability history
-- Filter by severity and status
-- Test exploit paths and mark findings as remediated
-
-### 🏗️ Monitoring & CI/CD
-- Track deployed applications across development, staging, and production
-- Automatic security health checks correlated with scan results
-- Security alerts for at-risk deployments
-- CI/CD integration guides (GitHub Actions, GitLab CI, Jenkins)
-
-### 🛡️ Policy Engine
-- Define org-wide security rules and enforce them across every repo
-- Generate compliance reports for SOC 2, ISO 27001, and PCI DSS
-- Evaluate code against custom security policies
-
-### 🔄 PR Integration
-- Auto-scan pull requests as they're opened
-- Vulnerability summary comments posted directly on PRs
-- Watch multiple repositories simultaneously
-
-### 📅 Scheduled Scans
-- Schedule recurring security scans on any repository
-- Stay ahead of new vulnerabilities with automated monitoring
+**Base URL:** `https://cyber-security-code-scan.base44.app/functions`
 
 ---
 
-## 🖥️ How to Use
+## 🔍 What We Detect
 
-### Running a Scan
-1. Go to **Scanner** in the nav bar
-2. Choose **Paste Code**, **Upload File**, or **Scan Repository**
-3. Select an AI model (Auto is recommended for most scans)
-4. Click **Initiate Security Scan**
-5. Review findings — each vulnerability includes a severity rating, description, and secure fix example
+### Code & Repository Scanning
+| Vulnerability | CWE | Severity |
+|---|---|---|
+| SQL Injection | CWE-89 | 🔴 Critical |
+| OS Command Injection | CWE-78 | 🔴 Critical |
+| Cross-Site Scripting (XSS) | CWE-79 | 🟠 High |
+| Hardcoded Credentials | CWE-798 | 🟠 High |
+| Path Traversal | CWE-22 | 🟠 High |
+| Insecure Deserialization | CWE-502 | 🟡 Medium |
+| Missing Authentication | CWE-306 | 🟡 Medium |
+| CORS Misconfiguration | CWE-942 | 🟡 Medium |
 
-### Auto-Fixing a Vulnerability
-1. After scanning, click **Auto-Fix** in the scan results
-2. Enter your GitHub repo (`owner/repo-name`)
-3. Enter the **full file path** within the repo (e.g. `src/utils/auth.js`)
-4. Paste the full file content
-5. Select the vulnerabilities to fix
-6. Click **Generate Fix & Open Pull Request**
-7. Review and merge the PR on GitHub
-
-### PR Integration
-1. Go to **PR Integration** in the nav bar
-2. Add a repository in `owner/repo` format
-3. Open PRs will be automatically scanned and commented on
-
----
-
-## 🧰 Tech Stack
-
-| Layer | Technology |
+### API Security (OWASP API Top 10 — 2023)
+| Check | ID |
 |---|---|
-| Frontend | React, Tailwind CSS, Framer Motion, Recharts, shadcn/ui |
-| Backend | Base44 serverless functions (Deno runtime) |
-| AI Engine | Multi-model LLM (GPT-4o-mini, Claude Sonnet/Opus, GPT-5) |
-| Database | Base44 managed entity store |
-| Integrations | GitHub API (OAuth + PAT) |
+| Broken Object Level Authorization | API1:2023 |
+| Broken Authentication | API2:2023 |
+| Broken Object Property Level Authorization | API3:2023 |
+| Unrestricted Resource Consumption | API4:2023 |
+| Broken Function Level Authorization | API5:2023 |
+| Unrestricted Access to Sensitive Business Flows | API6:2023 |
+| Server-Side Request Forgery (SSRF) | API7:2023 |
+| Security Misconfiguration | API8:2023 |
+| Improper Inventory Management | API9:2023 |
+| Unsafe Consumption of APIs | API10:2023 |
+
+### Supported Languages
+JavaScript · TypeScript · Python · Ruby · PHP · Java · Go · Rust · C/C++ · C# · Swift · Kotlin
 
 ---
 
-## 📁 Project Structure
+## 📋 Compliance Reports
 
-```
-src/
-  pages/
-    Landing.jsx          — AsCaaS marketing landing page
-    Scanner.jsx          — AI code vulnerability scanner
-    Analytics.jsx        — Security metrics dashboard
-    ThreatIntel.jsx      — Threat intelligence center
-    Monitoring.jsx       — Deployment monitoring & alerts
-    RedTeam.jsx          — Red team simulation
-    PolicyEngine.jsx     — Security policy management
-    PRIntegration.jsx    — GitHub PR auto-scanning
-    AlertsDashboard.jsx  — Active security alerts
-    Projects.jsx         — Project management
+Generate auditor-ready compliance reports mapped to major security frameworks:
 
-  components/
-    scanner/
-      CodeInput.jsx           — Paste / upload / repo scan input
-      ScanResults.jsx         — Vulnerability results display
-      AutoFixModal.jsx        — GitHub PR auto-fix flow
-      VulnerabilityCard.jsx   — Individual finding card
-      VulnerabilityDetailModal.jsx — Full finding detail + CVE search
-      ScanHistory.jsx         — Past scan history
-      RepoScanner.jsx         — Repository-level scan UI
-      ScheduleManager.jsx     — Scheduled scan management
-    analytics/               — Dashboard chart widgets
-    threatintel/             — Threat intelligence components
-    monitoring/              — Deployment monitoring components
-    policy/                  — Policy editor and evaluator
-    redteam/                 — Red team simulation components
-    reports/                 — Report generator
-    remediation/             — AI remediation assistant
+- **SOC 2 Type II** — Trust Services Criteria (CC6, CC7)
+- **HIPAA Security Rule** — Technical safeguards (§164.312)
+- **PCI DSS v4.0** — Requirements 6-8
+- **OWASP Top 10 (2021)** — A01 through A10
 
-base44/
-  functions/
-    autoFixPR/       — LLM patch generation + GitHub PR creation
-    scanRepository/  — Full repo traversal and scan
-    prSecurityScan/  — GitHub PR polling and AI scan bot
-    threatIntelligence/ — Threat intel backend
-    fetchRepoFile/   — GitHub file content fetcher
-    createReadme/    — README generator
+Each report includes:
+- Compliance score (percentage)
+- Control-by-control assessment (COMPLIANT / AT_RISK / NON_COMPLIANT)
+- Audit evidence trail with scan timestamps
+- Remediation plan with deadlines (48hr for critical, 2 weeks for high)
+- CWE-to-control mapping
 
-  entities/
-    CodeScan             — Scan results storage
-    VulnerabilityMetric  — Aggregated vulnerability metrics
-    DeployedApplication  — Monitored deployments
-    SecurityAlert        — Active security alerts
-    WatchedRepo          — PR integration watched repositories
-    Project              — Project grouping
-    SecurityPolicy       — Custom security policies
-    ScheduledScan        — Scheduled scan configurations
+```bash
+curl -X POST https://cyber-security-code-scan.base44.app/functions/generateComplianceReport \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"framework": "SOC2", "date_range_days": 30, "include_remediation": true}'
 ```
 
 ---
 
-## 🔑 Environment Variables
+## ⚙️ CI/CD Integration
 
-| Variable | Description |
-|---|---|
-| `GITHUB_TOKEN` | GitHub Personal Access Token (classic, `repo` scope) — required for PR scanning and Auto-Fix |
+### GitHub Actions
+
+Add automated security scanning to every pull request:
+
+```yaml
+# .github/workflows/security.yml
+name: Security Scan
+on:
+  pull_request:
+    branches: [main, develop]
+  push:
+    branches: [main]
+
+jobs:
+  codeguard-scan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: collins73/cyberscan/github-action@main
+        with:
+          api_key: ${{ secrets.CODEGUARD_API_KEY }}
+          fail_on_critical: 'true'
+          fail_on_high: 'false'
+```
+
+**Setup:**
+1. Generate a free API key
+2. Add `CODEGUARD_API_KEY` to your repo's **Settings → Secrets → Actions**
+3. Copy the workflow above
+4. Push — CodeGuard scans every PR automatically
+
+[Full GitHub Action documentation →](https://github.com/collins73/cyberscan/tree/main/github-action)
 
 ---
 
-## 🎯 Who It's For
+## 💰 Pricing
 
-- **Developers** — catch vulnerabilities before they hit production, auto-fix in one click
-- **Engineering Leads** — enforce security standards across all repos with policy engine
-- **CISOs / Security Teams** — compliance reporting, threat intelligence, red team simulation, full audit trail
-
----
-
-## 📬 Support & Contributing
-
-For issues or contributions, open an issue or pull request in this repository.
+| Tier | Price | Scans/Day | Features |
+|---|---|---|---|
+| **Free** | $0/mo | 10 | Code scanning, repo scanning, basic CWE detection |
+| **Pro** | $19.99/mo | 100 | + API security, compliance reports, bundled with RebelAgents |
+| **Enterprise** | $99.99/mo | 1,000 | + Webhooks, priority scanning, custom frameworks |
 
 ---
 
-*Built with ⚡ using [Base44](https://base44.com) — AI-powered app development platform.*
+## 🏗️ Architecture
 
-*CodeGuard is part of the [RebelAgents.ai](https://rebelauto-diagnostics-ai.com) portfolio of autonomous AI agents.*
+```
+codeguard/
+├── base44/
+│   ├── entities/          # Data models (ApiKey, ScanRecord, UsageLog, etc.)
+│   └── functions/         # Backend API functions (12 deployed)
+├── github-action/
+│   ├── action.yml         # GitHub Action definition
+│   ├── example-workflow.yml
+│   └── README.md          # Action-specific docs
+└── README.md              # This file
+```
+
+---
+
+## 🔐 Security
+
+- API keys are hashed with SHA-256 before storage — plaintext keys are never stored
+- HMAC-SHA256 signed webhook payloads (`X-CodeGuard-Signature` header)
+- Rate limiting enforced per API key based on pricing tier
+- Standardized error responses with proper HTTP status codes
+
+---
+
+## 📜 License
+
+Proprietary — © 2026 RebelAgents. All rights reserved.
+
+---
+
+Built with ⚡ by [RebelAgents](https://rebelagents.ai)
