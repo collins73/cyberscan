@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { base44 } from '@/api/base44Client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Bell, Shield, AlertTriangle, CheckCircle, XCircle, Clock, Filter, Trash2, Eye, Calendar, BarChart3, Activity, Globe, Crosshair, Settings, RefreshCw } from 'lucide-react';
+import { Bell, Shield, AlertTriangle, CheckCircle, XCircle, Clock, Filter, Trash2, Eye, Calendar, BarChart3, Activity, Globe, Crosshair, Settings, RefreshCw, Home } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
@@ -150,6 +150,9 @@ export default function AlertsDashboard() {
               <div className="flex gap-2 flex-wrap">
                 <Button variant="outline" onClick={() => refetch()} className="border-slate-700 text-slate-400 hover:bg-slate-800 h-9">
                   <RefreshCw className="w-4 h-4" />
+                </Button>
+                <Button variant="outline" onClick={() => navigate('/')} className="border-slate-700 text-slate-300 hover:bg-slate-800">
+                  <Home className="w-4 h-4 mr-2" /> Home
                 </Button>
                 <Button variant="outline" onClick={() => navigate('/Scanner')} className="border-cyan-500/30 text-cyan-400 hover:bg-cyan-500/10">
                   <Shield className="w-4 h-4 mr-2" /> Scanner

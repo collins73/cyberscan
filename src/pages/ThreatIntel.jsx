@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { base44 } from '@/api/base44Client';
 import { useQuery } from '@tanstack/react-query';
 import { motion } from 'framer-motion';
-import { Shield, Activity, Zap, Globe, AlertTriangle, ChevronRight } from 'lucide-react';
+import { Shield, Activity, Zap, Globe, AlertTriangle, ChevronRight, Home } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
 import ThreatLandscape from '../components/threatintel/ThreatLandscape';
@@ -52,6 +52,10 @@ export default function ThreatIntel() {
                 </div>
               </div>
               <div className="flex gap-3">
+                <Button variant="outline" onClick={() => navigate('/')}
+                  className="border-slate-700 text-slate-300 hover:bg-slate-800">
+                  <Home className="w-4 h-4 mr-2" /> Home
+                </Button>
                 <Button variant="outline" onClick={() => navigate('/Scanner')}
                   className="border-cyan-500/30 text-cyan-400 hover:bg-cyan-500/10">
                   <Shield className="w-4 h-4 mr-2" /> Scanner

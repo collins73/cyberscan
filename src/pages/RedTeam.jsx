@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { base44 } from '@/api/base44Client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Shield, AlertTriangle, Crosshair, CheckCircle, Clock, Filter, Download, RefreshCw, Zap, Target, Bug, Lock, BarChart3 } from 'lucide-react';
+import { Shield, AlertTriangle, Crosshair, CheckCircle, Clock, Filter, Download, RefreshCw, Zap, Target, Bug, Lock, BarChart3, Home } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -96,6 +96,9 @@ export default function RedTeam() {
                 </div>
               </div>
               <div className="flex gap-2 flex-wrap">
+                <Button variant="outline" onClick={() => navigate('/')} className="border-slate-700 text-slate-300 hover:bg-slate-800">
+                  <Home className="w-4 h-4 mr-2" /> Home
+                </Button>
                 <Button variant="outline" onClick={() => navigate('/Scanner')} className="border-cyan-500/30 text-cyan-400 hover:bg-cyan-500/10">
                   <Shield className="w-4 h-4 mr-2" /> Scanner
                 </Button>

@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { base44 } from '@/api/base44Client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Shield, Plus, Play, FileText, AlertTriangle, CheckCircle, Settings, BarChart3, Crosshair } from 'lucide-react';
+import { Shield, Plus, Play, FileText, AlertTriangle, CheckCircle, Settings, BarChart3, Crosshair, Home } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useNavigate } from 'react-router-dom';
@@ -100,6 +100,9 @@ export default function PolicyEngine() {
                     </Badge>
                   )}
                 </div>
+                <Button variant="outline" onClick={() => navigate('/')} className="border-slate-700 text-slate-300 hover:bg-slate-800">
+                  <Home className="w-4 h-4 mr-2" /> Home
+                </Button>
                 <Button variant="outline" onClick={() => navigate('/Scanner')} className="border-cyan-500/30 text-cyan-400 hover:bg-cyan-500/10">
                   <Shield className="w-4 h-4 mr-2" /> Scanner
                 </Button>
