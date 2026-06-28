@@ -1,8 +1,9 @@
 import React from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Shield, BarChart3, Activity, Globe, BookOpen } from 'lucide-react';
+import { Shield, BarChart3, Activity, Globe, BookOpen, Home } from 'lucide-react';
 
 const NAV_ITEMS = [
+  { label: 'Home', path: '/', icon: Home, color: 'cyan' },
   { label: 'Analytics', path: '/Analytics', icon: BarChart3, color: 'cyan' },
   { label: 'Threat Intel', path: '/ThreatIntel', icon: Globe, color: 'orange' },
   { label: 'Monitoring', path: '/Monitoring', icon: Activity, color: 'cyan' },
