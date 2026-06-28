@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { base44 } from '@/api/base44Client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { motion } from 'framer-motion';
-import { Shield, Activity, AlertTriangle, Plus, RefreshCw, Bell } from 'lucide-react';
+import { Shield, Activity, AlertTriangle, Plus, RefreshCw, Bell, Home } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -181,6 +181,14 @@ export default function Monitoring() {
                 >
                   <Plus className="w-4 h-4 mr-2" />
                   Add Deployment
+                </Button>
+                <Button
+                  variant="outline"
+                  onClick={() => navigate('/')}
+                  className="border-slate-700 text-slate-300 hover:bg-slate-800"
+                >
+                  <Home className="w-4 h-4 mr-2" />
+                  Home
                 </Button>
                 <Button
                   variant="outline"
