@@ -150,6 +150,12 @@ export default function Landing() {
               >
                 <BookOpen className="w-4 h-4" /> User Manual
               </button>
+              <button
+                onClick={() => navigate('/DeveloperPortal')}
+                className="flex items-center gap-1.5 text-slate-400 hover:text-cyan-400 text-sm transition-colors"
+              >
+                <Code className="w-4 h-4" /> Developer API
+              </button>
               <Button
                 onClick={() => navigate('/Scanner')}
                 className="bg-gradient-to-r from-cyan-500 to-blue-500 text-black font-bold hover:opacity-90"
