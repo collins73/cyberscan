@@ -5,7 +5,8 @@ import { Input } from '@/components/ui/input';
 import {
   Select, SelectTrigger, SelectValue, SelectContent, SelectItem,
 } from '@/components/ui/select';
-import { Shield, Copy, Check, Terminal, KeyRound, Github, Loader2 } from 'lucide-react';
+import { Shield, Copy, Check, Terminal, KeyRound, Github, Loader2, ArrowLeft, LayoutDashboard } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 // Developer Portal v1.0
 
@@ -70,6 +71,7 @@ function CodeBlock({ code, label }) {
 }
 
 export default function DeveloperPortal() {
+  const navigate = useNavigate();
   const [form, setForm] = useState({ name: '', email: '', tier: 'Free' });
   const [generatedKey, setGeneratedKey] = useState('');
   const [loading, setLoading] = useState(false);
@@ -110,6 +112,24 @@ export default function DeveloperPortal() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 text-white">
+      {/* Nav */}
+      <nav className="border-b border-cyan-500/20 bg-slate-950/80 backdrop-blur-xl sticky top-0 z-50">
+        <div className="max-w-5xl mx-auto px-6 py-4 flex items-center justify-between">
+          <button
+            onClick={() => navigate('/')}
+            className="flex items-center gap-1.5 text-slate-400 hover:text-cyan-400 text-sm transition-colors"
+          >
+            <ArrowLeft className="w-4 h-4" /> Back to Home
+          </button>
+          <Button
+            onClick={() => navigate('/Scanner')}
+            className="bg-gradient-to-r from-cyan-500 to-blue-500 text-black font-bold hover:opacity-90"
+          >
+            <LayoutDashboard className="w-4 h-4 mr-1" /> Dashboard
+          </Button>
+        </div>
+      </nav>
+
       <div className="max-w-5xl mx-auto px-6 py-16">
         {/* Hero */}
         <header className="text-center mb-16">
