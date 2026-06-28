@@ -3,7 +3,7 @@ import Home from './pages/Home';
 import Scanner from './pages/Scanner';
 import Monitoring from './pages/Monitoring';
 import ThreatIntel from './pages/ThreatIntel';
-
+import DeveloperPortal from './pages/DeveloperPortal';
 
 export const PAGES = {
     "Analytics": Analytics,
@@ -11,6 +11,7 @@ export const PAGES = {
     "Scanner": Scanner,
     "Monitoring": Monitoring,
     "ThreatIntel": ThreatIntel,
+    "DeveloperPortal": DeveloperPortal,
 }
 
 export const pagesConfig = {

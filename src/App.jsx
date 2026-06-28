@@ -10,6 +10,7 @@ import PageNotFound from './lib/PageNotFound';
 import ThreatIntel from './pages/ThreatIntel';
 import Landing from './pages/Landing';
 import OperationsManual from './pages/OperationsManual';
+import DeveloperPortal from './pages/DeveloperPortal';
 import { AuthProvider, useAuth } from '@/lib/AuthContext';
 import UserNotRegisteredError from '@/components/UserNotRegisteredError';
 
@@ -21,8 +22,19 @@ const LayoutWrapper = ({ children, currentPageName }) => Layout ?
   <Layout currentPageName={currentPageName}>{children}</Layout>
   : <>{children}</>;
 
+const PUBLIC_PATHS = ['/DeveloperPortal'];
+
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, isAuthenticated, navigateToLogin } = useAuth();
+
+  // Public pages render immediately, bypassing the auth gate entirely
+  if (PUBLIC_PATHS.includes(window.location.pathname)) {
+    return (
+      <Routes>
+        <Route path="/DeveloperPortal" element={<DeveloperPortal />} />
+      </Routes>
+    );
+  }
 
   // Show loading spinner while checking app public settings or auth
   if (isLoadingPublicSettings || isLoadingAuth) {
@@ -48,7 +60,7 @@ const AuthenticatedApp = () => {
   return (
     <Routes>
       <Route path="/" element={<Landing />} />
-      {Object.entries(Pages).map(([path, Page]) => (
+      {Object.entries(Pages).filter(([path]) => path !== 'DeveloperPortal').map(([path, Page]) => (
         <Route
           key={path}
           path={`/${path}`}
