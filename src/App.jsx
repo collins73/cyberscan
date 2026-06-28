@@ -73,6 +73,7 @@ const AuthenticatedApp = () => {
       ))}
       <Route path="/ThreatIntel" element={<LayoutWrapper currentPageName="ThreatIntel"><ThreatIntel /></LayoutWrapper>} />
       <Route path="/OperationsManual" element={<OperationsManual />} />
+      <Route path="/DeveloperPortal" element={<DeveloperPortal />} />
       <Route path="/Landing" element={<Landing />} />
       <Route path="*" element={<PageNotFound />} />
     </Routes>
