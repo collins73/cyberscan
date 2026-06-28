@@ -7,6 +7,8 @@ import {
 } from '@/components/ui/select';
 import { Shield, Copy, Check, Terminal, KeyRound, Github, Loader2 } from 'lucide-react';
 
+{/* Developer Portal v1.0 */}
+
 const ENDPOINTS = [
   { method: 'POST', path: '/functions/generateApiKey', desc: 'Generate a new API key for a given tier.' },
   { method: 'POST', path: '/functions/scanCodeApi', desc: 'Scan a code snippet for vulnerabilities.' },
