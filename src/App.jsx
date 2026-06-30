@@ -11,6 +11,11 @@ import ThreatIntel from './pages/ThreatIntel';
 import Landing from './pages/Landing';
 import OperationsManual from './pages/OperationsManual';
 import DeveloperPortal from './pages/DeveloperPortal';
+import RedTeam from './pages/RedTeam';
+import Projects from './pages/Projects';
+import AlertsDashboard from './pages/AlertsDashboard';
+import PolicyEngine from './pages/PolicyEngine';
+import PRIntegration from './pages/PRIntegration';
 import { AuthProvider, useAuth } from '@/lib/AuthContext';
 import UserNotRegisteredError from '@/components/UserNotRegisteredError';
 
@@ -72,6 +77,11 @@ const AuthenticatedApp = () => {
         />
       ))}
       <Route path="/ThreatIntel" element={<LayoutWrapper currentPageName="ThreatIntel"><ThreatIntel /></LayoutWrapper>} />
+      <Route path="/RedTeam" element={<LayoutWrapper currentPageName="RedTeam"><RedTeam /></LayoutWrapper>} />
+      <Route path="/Projects" element={<LayoutWrapper currentPageName="Projects"><Projects /></LayoutWrapper>} />
+      <Route path="/AlertsDashboard" element={<LayoutWrapper currentPageName="AlertsDashboard"><AlertsDashboard /></LayoutWrapper>} />
+      <Route path="/PolicyEngine" element={<LayoutWrapper currentPageName="PolicyEngine"><PolicyEngine /></LayoutWrapper>} />
+      <Route path="/PRIntegration" element={<LayoutWrapper currentPageName="PRIntegration"><PRIntegration /></LayoutWrapper>} />
       <Route path="/OperationsManual" element={<OperationsManual />} />
       <Route path="/DeveloperPortal" element={<DeveloperPortal />} />
       <Route path="/Landing" element={<Landing />} />
